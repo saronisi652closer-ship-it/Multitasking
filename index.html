@@ -882,17 +882,35 @@ const btnApplyPreset = $("btnApplyPreset");
   btnApplyPreset.onclick = () => {
   const v = (evPreset.value || "").trim();
   if (!v) return setStatus("テンプレを選んでください");
-  const map = { H:0,A:0,B:0,C:0,D:0,S:0 };
+
+  const map = { H:0, A:0, B:0, C:0, D:0, S:0 };
+
   v.split(",").forEach(part => {
-    const [k,val] = part.split(":");
-    if (k && val) map[k.trim()] = parseInt(val,10);
+    const p = part.trim();
+    if (!p) return;
+
+    // 形式1: H:252
+    if (p.includes(":")) {
+      const [k, val] = p.split(":");
+      const key = (k || "").trim().toUpperCase();
+      const num = parseInt((val || "").trim(), 10);
+      if (key && Number.isFinite(num)) map[key] = num;
+      return;
+    }
+
+    // 形式2: H252（コロン無し）
+    const key = p.slice(0,1).toUpperCase();
+    const num = parseInt(p.slice(1), 10);
+    if ("HABCDS".includes(key) && Number.isFinite(num)) map[key] = num;
   });
+
   evH.value = String(map.H||0);
   evA.value = String(map.A||0);
   evB.value = String(map.B||0);
   evC.value = String(map.C||0);
   evD.value = String(map.D||0);
   evS.value = String(map.S||0);
+
   calcEV();
   setStatus("テンプレを適用しました");
 };
@@ -982,6 +1000,7 @@ const btnApplyPreset = $("btnApplyPreset");
 </body>
 
 </html>
+
 
 
 
