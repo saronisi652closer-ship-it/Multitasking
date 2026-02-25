@@ -131,6 +131,11 @@ html, body { overflow-x: hidden; }
   .item-head > .row { width: 100%; flex-wrap: wrap; gap: 8px; }
   .item-head > .row button { width: 100%; }
 }
+    /* === 全体の横幅を最大化（余白を減らす） === */
+@media (max-width: 520px) {
+  .wrap { padding-left: 8px; padding-right: 8px; }
+  .card { padding: 12px; }
+}
   </style>
 </head>
 
@@ -1168,6 +1173,7 @@ html, body { overflow-x: hidden; }
 </script>
 </body>
 </html>
+
 
 
 
