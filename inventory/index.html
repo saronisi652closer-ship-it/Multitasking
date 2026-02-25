@@ -1,0 +1,1240 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>在庫管理（自動購入リスト）</title>
+  <style>
+    :root{
+      --bg:#0b0d12;
+      --muted:#9aa4b2;
+      --text:#e8eef7;
+      --accent:#7aa2ff;
+      --danger:#ff5c7a;
+      --warn:#ffcc66;
+      --ok:#4de1a6;
+      --shadow: 0 8px 24px rgba(0,0,0,.35);
+      --radius:16px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans JP",sans-serif;
+      background: radial-gradient(1200px 800px at 20% 0%, #131a2b 0%, var(--bg) 55%) fixed;
+      color:var(--text);
+    }
+    header{
+      position: sticky; top:0; z-index:10;
+      padding:12px 14px 10px;
+      backdrop-filter: blur(12px);
+      background: rgba(11,13,18,.72);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .topbar{display:flex; gap:10px; align-items:center; justify-content:space-between;}
+    .title{font-weight:1000; letter-spacing:.02em; font-size:16px;}
+    .pill{
+      display:inline-flex; align-items:center; gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .noticebar{
+      margin-top:10px;
+      display:none;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,92,122,.35);
+      background: rgba(255,92,122,.10);
+      color:#ffd3dc;
+      font-weight:900;
+    }
+    .noticebar.show{display:flex}
+    .noticebar small{font-weight:700; color:#ffd3dc; opacity:.85}
+    .tabs{
+      margin-top:10px;
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+    }
+    .tabbtn{
+      border:none;
+      padding:10px 12px;
+      border-radius: 12px;
+      cursor:pointer;
+      font-weight:1000;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      display:flex; align-items:center; justify-content:center; gap:10px;
+    }
+    .tabbtn.active{
+      background: rgba(122,162,255,.18);
+      border:1px solid rgba(122,162,255,.35);
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:24px;
+      padding:4px 8px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:1000;
+      background: rgba(255,92,122,.18);
+      border:1px solid rgba(255,92,122,.35);
+      color:#ffd3dc;
+    }
+
+    main{padding:14px; max-width:980px; margin:0 auto}
+    .grid{display:grid; gap:12px}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.08);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .card h2{margin:0; padding:12px 12px 0; font-size:14px; color:#d9e4ff; letter-spacing:.02em;}
+    .card .sub{padding:6px 12px 10px; color:var(--muted); font-size:12px;}
+    .toolbar{
+      padding:12px;
+      border-top:1px solid rgba(255,255,255,.06);
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+    }
+    input, select, button, textarea{font: inherit; color: var(--text);}
+    input, select, textarea{
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 12px;
+      padding: 10px 10px;
+      outline:none;
+      width:100%;
+    }
+    input:focus, select:focus, textarea:focus{
+      border-color: rgba(122,162,255,.6);
+      box-shadow: 0 0 0 3px rgba(122,162,255,.15);
+    }
+    .btn{
+      border:none;
+      background: rgba(122,162,255,.18);
+      border:1px solid rgba(122,162,255,.35);
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      font-weight:1000;
+    }
+    .btn:active{transform: translateY(1px)}
+    .btn.secondary{
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.12);
+      font-weight:1000;
+    }
+    .btn.danger{background: rgba(255,92,122,.14); border:1px solid rgba(255,92,122,.35);}
+    .btn.ok{background: rgba(77,225,166,.14); border:1px solid rgba(77,225,166,.35);}
+    .btn.small{padding:8px 10px; border-radius:10px; font-size:12px}
+    .split{display:grid; grid-template-columns: 1fr; gap:12px;}
+    @media (min-width:860px){ .split{grid-template-columns: 1.2fr .8fr;} }
+
+    .form{
+      padding:12px;
+      display:grid;
+      gap:10px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width:560px){
+      .form{grid-template-columns: 1fr 1fr;}
+      .form .full{grid-column: 1 / -1;}
+    }
+
+    .kpi{
+      display:grid; gap:10px;
+      grid-template-columns: repeat(3,1fr);
+      padding:12px;
+    }
+    .kpi .box{
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding:10px;
+      min-height:70px;
+    }
+    .kpi .num{font-size:22px; font-weight:1100}
+    .kpi .label{font-size:12px; color:var(--muted)}
+
+    .tag{
+      display:inline-flex; align-items:center; gap:6px;
+      padding:6px 10px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:999px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .tag.danger{border-color: rgba(255,92,122,.35); color:#ffd3dc; background: rgba(255,92,122,.10)}
+    .tag.warn{border-color: rgba(255,204,102,.40); color:#ffe7b3; background: rgba(255,204,102,.10)}
+    .tag.ok{border-color: rgba(77,225,166,.35); color:#caffef; background: rgba(77,225,166,.10)}
+
+    .list{padding: 8px 0 10px; border-top:1px solid rgba(255,255,255,.06);}
+    .item{
+      display:grid;
+      grid-template-columns: 1fr auto;
+      gap:10px;
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      align-items:center;
+    }
+    .item:last-child{border-bottom:none}
+    .name{font-weight:1100}
+    .meta{font-size:12px; color:var(--muted); margin-top:6px; display:flex; gap:8px; flex-wrap:wrap}
+    .right{display:flex; gap:8px; align-items:center; justify-content:flex-end; flex-wrap:wrap}
+    .qty{
+      font-variant-numeric: tabular-nums;
+      font-weight:1100;
+      padding:6px 10px;
+      border-radius: 12px;
+      background: rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.10);
+      min-width: 64px;
+      text-align:center;
+    }
+    .mini{color:var(--muted); font-size:12px; line-height:1.4;}
+    .hint{font-size:12px; color:var(--muted); margin-top:6px;}
+    .footer-actions{padding:12px; border-top:1px solid rgba(255,255,255,.06); display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
+
+    /* Purchase Mode */
+    .purchaseModeTop{
+      padding:12px;
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+      justify-content:space-between;
+      border-top:1px solid rgba(255,255,255,.06);
+    }
+    .buyCard{
+      padding:10px 12px;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      justify-content:space-between;
+    }
+    .buyLeft{min-width:0; flex:1}
+    .buyTitle{
+      font-weight:1100;
+      font-size:16px;
+      overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+    }
+    .buySub{color:var(--muted); font-size:12px; margin-top:6px; display:flex; gap:8px; flex-wrap:wrap;}
+    .buyActions{display:flex; flex-direction:column; gap:8px; align-items:flex-end; min-width:160px}
+    .checkBtn{
+      width:100%;
+      padding:12px 14px;
+      border-radius:14px;
+      font-weight:1100;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      cursor:pointer;
+    }
+    .checkBtn.done{
+      background: rgba(77,225,166,.14);
+      border-color: rgba(77,225,166,.35);
+    }
+    .quickRow{display:flex; gap:8px; width:100%}
+    .quickRow .btn{flex:1}
+    .qtyInputRow{display:flex; gap:8px; width:100%}
+    .qtyInputRow input{flex:1; padding:10px; border-radius:12px}
+    .qtyInputRow .btn{white-space:nowrap}
+
+    /* Dialog */
+    .dialog{
+      position: fixed; inset:0; z-index:50;
+      background: rgba(0,0,0,.55);
+      display:none;
+      align-items:center; justify-content:center;
+      padding:14px;
+    }
+    .dialog.open{display:flex}
+    .modal{
+      width:min(860px, 100%);
+      background: rgba(18,22,34,.96);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .modal header{
+      position: unset;
+      background: transparent;
+      border-bottom:1px solid rgba(255,255,255,.06);
+      padding:12px;
+    }
+    .modal .body{padding:12px}
+    .modal .body textarea{min-height:260px}
+    .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
+    .muted{color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <div class="title">在庫管理（自動購入リスト）</div>
+      <div class="pill" id="clock">--:--</div>
+    </div>
+
+    <!-- “通知っぽい”バナー -->
+    <div class="noticebar" id="noticebar">
+      <div>
+        購入対象が <span id="noticeCount">0</span> 件あります
+        <small>（タップで購入モードへ）</small>
+      </div>
+      <button class="btn small secondary" id="noticeDismiss">閉じる</button>
+    </div>
+
+    <div class="tabs">
+      <button class="tabbtn active" id="tabInv">在庫</button>
+      <button class="tabbtn" id="tabBuy">購入モード <span class="badge" id="buyBadge" style="display:none;">0</span></button>
+    </div>
+  </header>
+
+  <main class="grid" id="viewInv">
+    <section class="card">
+      <h2>ダッシュボード</h2>
+      <div class="sub">購入対象 / 期限 / 総品目</div>
+      <div class="kpi">
+        <div class="box">
+          <div class="num" id="kpiTotal">0</div>
+          <div class="label">品目数</div>
+        </div>
+        <div class="box">
+          <div class="num" id="kpiNeedBuy">0</div>
+          <div class="label">購入対象（ライン以下）</div>
+        </div>
+        <div class="box">
+          <div class="num" id="kpiExpire">0</div>
+          <div class="label">期限が近い（7日以内）</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div style="flex:1 1 220px;">
+          <input id="q" placeholder="検索（例：牛乳、冷凍、トイレット）" />
+        </div>
+        <div style="flex:0 1 180px;">
+          <select id="filterCategory">
+            <option value="">カテゴリ：すべて</option>
+          </select>
+        </div>
+        <div style="flex:0 1 170px;">
+          <select id="filterMode">
+            <option value="all">表示：すべて</option>
+            <option value="needbuy">購入対象のみ</option>
+            <option value="expire">期限が近いのみ</option>
+          </select>
+        </div>
+        <button class="btn secondary" id="btnShare">共有/バックアップ</button>
+        <button class="btn danger" id="btnReset">全消去</button>
+      </div>
+    </section>
+
+    <section class="split">
+      <section class="card">
+        <h2>品目追加 / 編集</h2>
+        <div class="sub">在庫数が「購入ライン以下」になったら購入リストへ自動反映</div>
+
+        <form class="form" id="formItem">
+          <input class="full" id="id" type="hidden" />
+
+          <div>
+            <label class="mini">品名</label>
+            <input id="name" required placeholder="例：牛乳、卵、冷凍唐揚げ" />
+          </div>
+
+          <div>
+            <label class="mini">カテゴリ</label>
+            <input id="category" placeholder="例：冷蔵庫 / 冷凍庫 / 常温 / 日用品" />
+          </div>
+
+          <div>
+            <label class="mini">単位（任意）</label>
+            <input id="unit" placeholder="例：本、個、袋、ロール、kg" />
+          </div>
+
+          <div>
+            <label class="mini">期限（任意）</label>
+            <input id="expiry" type="date" />
+          </div>
+
+          <div>
+            <label class="mini">在庫数</label>
+            <input id="qty" type="number" step="1" min="0" value="0" required />
+          </div>
+
+          <div>
+            <label class="mini">購入ライン（この数以下で購入対象）</label>
+            <input id="reorder" type="number" step="1" min="0" value="0" required />
+          </div>
+
+          <div>
+            <label class="mini">購入目安（購入対象時に推奨）</label>
+            <input id="buyQty" type="number" step="1" min="1" value="1" required />
+          </div>
+
+          <div class="full">
+            <label class="mini">メモ（任意）</label>
+            <input id="note" placeholder="例：1L、メーカー指定、ダブル" />
+          </div>
+
+          <div class="full row">
+            <button class="btn ok" type="submit" id="btnSave">保存</button>
+            <button class="btn secondary" type="button" id="btnClear">入力クリア</button>
+          </div>
+        </form>
+
+        <div class="footer-actions">
+          <button class="btn secondary" id="btnDemo">サンプル投入</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>購入リスト（自動＋手動）</h2>
+        <div class="sub">自動：購入ライン以下／手動：ついで買いメモ</div>
+
+        <div class="toolbar">
+          <button class="btn" id="btnCopy">未購入をコピー</button>
+          <button class="btn secondary" id="btnClearDone">完了を一括削除</button>
+        </div>
+
+        <div class="list" id="buyList"></div>
+
+        <div class="toolbar">
+          <div style="flex:1 1 220px;">
+            <input id="buyAddText" placeholder="手動追加（例：ゴミ袋 45L×1）" />
+            <div class="hint">※ 手動項目は在庫と連動しません（メモ用途）。</div>
+          </div>
+          <button class="btn small" id="btnBuyAdd">追加</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="card">
+      <h2>一覧</h2>
+      <div class="sub">在庫・購入ライン・期限が一気に見えます</div>
+      <div class="list" id="list"></div>
+    </section>
+  </main>
+
+  <!-- Purchase Mode View -->
+  <main class="grid" id="viewBuy" style="display:none;">
+    <section class="card">
+      <h2>購入モード</h2>
+      <div class="sub">自動項目は「買った数を入力」→在庫へ反映→購入対象から自動で消えます</div>
+
+      <div class="purchaseModeTop">
+        <div class="row">
+          <span class="tag" id="pmCount">未購入 0</span>
+          <span class="tag" id="pmAutoCount">自動 0</span>
+          <span class="tag" id="pmManualCount">手動 0</span>
+        </div>
+        <div class="row">
+          <button class="btn secondary" id="pmCopy">未購入をコピー</button>
+          <button class="btn secondary" id="pmShowAll">完了も表示</button>
+        </div>
+      </div>
+
+      <div class="list" id="purchaseList"></div>
+
+      <div class="toolbar">
+        <div class="hint">
+          自動（在庫連動）：<b>「目安分を反映」</b>または<b>「買った数を反映」</b>で在庫に加算 → ライン超えたら自動でリストから消えます。<br>
+          手動（メモ）：チェックのみ。
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Share / Backup Dialog -->
+  <div class="dialog" id="dialog">
+    <div class="modal">
+      <header>
+        <div class="row" style="justify-content:space-between;">
+          <div style="font-weight:1100;">共有 / バックアップ</div>
+          <button class="btn secondary small" id="btnCloseDialog">閉じる</button>
+        </div>
+        <div class="muted" style="font-size:12px; margin-top:6px;">
+          共有コードをコピー → 別端末で貼り付け → 復元（サーバー不要）
+        </div>
+      </header>
+      <div class="body">
+        <div class="row" style="justify-content:flex-end;">
+          <button class="btn secondary" id="btnMakeCode">共有コード作成</button>
+          <button class="btn ok" id="btnRestoreCode">コードで復元</button>
+          <button class="btn secondary" id="btnDownload">JSON保存</button>
+          <button class="btn secondary" id="btnUpload">JSON読込</button>
+          <input id="fileIn" type="file" accept="application/json" style="display:none;">
+        </div>
+        <textarea id="shareArea" placeholder="ここに共有コード（またはJSON）"></textarea>
+        <div class="hint">
+          ・共有コードは長い文字列になります。LINE/メモ/メールなどで送ってOK。<br>
+          ・復元すると、今の端末のデータは上書きされます。
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const LS_ITEMS = "inv_items_v3";
+  const LS_BUY = "inv_buy_v3";
+  const LS_NOTICE_DISMISS = "inv_notice_dismiss_v3"; // timestamp
+
+  /** @type {{id:string,name:string,category:string,unit:string,expiry:string,qty:number,reorder:number,buyQty:number,note:string,updatedAt:number}[]} */
+  let items = [];
+  /**
+   * @type {{id:string,type:"auto"|"manual",itemId?:string,text?:string,done:boolean,createdAt:number}[]}
+   */
+  let buy = [];
+
+  const el = (id) => document.getElementById(id);
+
+  // views
+  const viewInv = el("viewInv");
+  const viewBuy = el("viewBuy");
+  const tabInv = el("tabInv");
+  const tabBuy = el("tabBuy");
+
+  const listEl = el("list");
+  const buyListEl = el("buyList");
+  const purchaseListEl = el("purchaseList");
+
+  const qEl = el("q");
+  const filterCategoryEl = el("filterCategory");
+  const filterModeEl = el("filterMode");
+
+  const kpiTotal = el("kpiTotal");
+  const kpiNeedBuy = el("kpiNeedBuy");
+  const kpiExpire = el("kpiExpire");
+
+  const pmCount = el("pmCount");
+  const pmAutoCount = el("pmAutoCount");
+  const pmManualCount = el("pmManualCount");
+  const pmShowAll = el("pmShowAll");
+  let pmShowAllDone = false;
+
+  // notice
+  const noticebar = el("noticebar");
+  const noticeCount = el("noticeCount");
+  const noticeDismiss = el("noticeDismiss");
+  const buyBadge = el("buyBadge");
+
+  const dialog = el("dialog");
+  const shareArea = el("shareArea");
+  const fileIn = el("fileIn");
+
+  const form = el("formItem");
+  const f = {
+    id: el("id"),
+    name: el("name"),
+    category: el("category"),
+    unit: el("unit"),
+    expiry: el("expiry"),
+    qty: el("qty"),
+    reorder: el("reorder"),
+    buyQty: el("buyQty"),
+    note: el("note"),
+  };
+
+  // Clock
+  const clock = el("clock");
+  setInterval(() => {
+    const d = new Date();
+    clock.textContent = String(d.getHours()).padStart(2,"0") + ":" + String(d.getMinutes()).padStart(2,"0");
+  }, 500);
+
+  const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
+
+  function load(){
+    try{ items = JSON.parse(localStorage.getItem(LS_ITEMS) || "[]"); }catch{ items = []; }
+    try{ buy = JSON.parse(localStorage.getItem(LS_BUY) || "[]"); }catch{ buy = []; }
+    normalize();
+    syncAutoBuy();
+  }
+  function save(){
+    localStorage.setItem(LS_ITEMS, JSON.stringify(items));
+    localStorage.setItem(LS_BUY, JSON.stringify(buy));
+  }
+  function normalize(){
+    items = (items || []).map(it => ({
+      id: it.id || uid(),
+      name: (it.name ?? "").toString(),
+      category: (it.category ?? "").toString(),
+      unit: (it.unit ?? "").toString(),
+      expiry: (it.expiry ?? "").toString(),
+      qty: Number.isFinite(+it.qty) ? +it.qty : 0,
+      reorder: Number.isFinite(+it.reorder) ? +it.reorder : 0,
+      buyQty: Number.isFinite(+it.buyQty) ? +it.buyQty : 1,
+      note: (it.note ?? "").toString(),
+      updatedAt: Number.isFinite(+it.updatedAt) ? +it.updatedAt : Date.now(),
+    }));
+    buy = (buy || []).map(b => ({
+      id: b.id || uid(),
+      type: (b.type === "manual") ? "manual" : "auto",
+      itemId: b.itemId,
+      text: b.text,
+      done: !!b.done,
+      createdAt: Number.isFinite(+b.createdAt) ? +b.createdAt : Date.now(),
+    }));
+  }
+
+  function daysUntil(dateStr){
+    if(!dateStr) return null;
+    const d = new Date(dateStr + "T00:00:00");
+    if(isNaN(d.getTime())) return null;
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    return Math.ceil((d - today) / (1000*60*60*24));
+  }
+  function needBuy(it){ return it.qty <= it.reorder; }
+  function isExpireSoon(it){
+    const du = daysUntil(it.expiry);
+    return du !== null && du <= 7;
+  }
+
+  // ---- Auto buy sync (core)
+  function syncAutoBuy(){
+    const existing = new Map(buy.filter(b=>b.type==="auto").map(b => [b.itemId, b]));
+    // remove auto for deleted items
+    buy = buy.filter(b => b.type==="manual" || items.some(it => it.id === b.itemId));
+
+    for(const it of items){
+      const want = needBuy(it);
+      const ex = existing.get(it.id);
+      if(want){
+        if(!ex){
+          buy.unshift({id: uid(), type:"auto", itemId: it.id, done:false, createdAt: Date.now()});
+        } else {
+          // keep done state; if it was done but still need buy -> auto should re-open
+          if(ex.done) ex.done = false;
+        }
+      }else{
+        // no longer need -> remove auto entry (done/undone both)
+        buy = buy.filter(b => !(b.type==="auto" && b.itemId === it.id));
+      }
+    }
+    save();
+  }
+
+  function rebuildCategoryOptions(){
+    const cats = Array.from(new Set(items.map(i => (i.category||"").trim()).filter(Boolean)))
+      .sort((a,b)=>a.localeCompare(b,"ja"));
+    const cur = filterCategoryEl.value;
+    filterCategoryEl.innerHTML = `<option value="">カテゴリ：すべて</option>` + cats.map(c => `<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join("");
+    if(cats.includes(cur)) filterCategoryEl.value = cur;
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;").replaceAll("'","&#39;");
+  }
+
+  function itemBadges(it){
+    const du = daysUntil(it.expiry);
+    const badges = [];
+    badges.push(needBuy(it) ? `<span class="tag danger">購入対象</span>` : `<span class="tag ok">OK</span>`);
+    badges.push(`<span class="tag">ライン ≤ ${it.reorder}${escapeHtml(it.unit||"")}</span>`);
+    badges.push(`<span class="tag">目安 ${it.buyQty}${escapeHtml(it.unit||"")}</span>`);
+    if(du !== null){
+      if(du < 0) badges.push(`<span class="tag danger">期限切れ</span>`);
+      else if(du <= 7) badges.push(`<span class="tag warn">期限 ${du}日</span>`);
+      else badges.push(`<span class="tag">期限 ${du}日</span>`);
+    }
+    return badges.join("");
+  }
+
+  function itemRow(it){
+    const unit = it.unit ? it.unit : "";
+    const meta = [
+      it.category ? `カテゴリ：${escapeHtml(it.category)}` : null,
+      it.note ? `メモ：${escapeHtml(it.note)}` : null,
+    ].filter(Boolean).map(s=>`<span class="tag">${s}</span>`).join("");
+
+    return `
+      <div class="item" data-itemid="${escapeHtml(it.id)}">
+        <div>
+          <div class="name">${escapeHtml(it.name)}</div>
+          <div class="meta">
+            ${itemBadges(it)}
+            ${meta}
+          </div>
+        </div>
+        <div class="right">
+          <div class="qty">${it.qty}${escapeHtml(unit)}</div>
+          <button class="btn small secondary" data-act="dec">-1</button>
+          <button class="btn small secondary" data-act="inc">+1</button>
+          <button class="btn small secondary" data-act="edit">編集</button>
+          <button class="btn small danger" data-act="del">削除</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function buyRow(b){
+    const isAuto = b.type === "auto";
+    const it = isAuto ? items.find(x => x.id === b.itemId) : null;
+
+    const text = isAuto && it
+      ? `[自動] ${it.name}（目安:${it.buyQty}${it.unit||""} / 現在:${it.qty}${it.unit||""} / ライン≤${it.reorder}${it.unit||""}${it.category?` / ${it.category}`:""}）`
+      : isAuto ? "[自動] （削除された品目）" : (b.text || "");
+
+    return `
+      <div class="item" data-buyid="${escapeHtml(b.id)}">
+        <div>
+          <div class="name" style="${b.done ? "text-decoration:line-through; opacity:.7" : ""}">
+            ${escapeHtml(text)}
+          </div>
+          <div class="meta">
+            <span class="tag">${isAuto ? "自動" : "手動"}</span>
+            ${b.done ? `<span class="tag ok">完了</span>` : `<span class="tag warn">未購入</span>`}
+          </div>
+        </div>
+        <div class="right">
+          <button class="btn small ${b.done ? "secondary" : "ok"}" data-bact="toggle">${b.done ? "戻す" : "完了"}</button>
+          <button class="btn small danger" data-bact="del">削除</button>
+        </div>
+      </div>
+    `;
+  }
+
+  // Purchase mode card with "apply bought qty"
+  function buyCard(b){
+    const isAuto = b.type === "auto";
+    const it = isAuto ? items.find(x => x.id === b.itemId) : null;
+
+    const title = isAuto ? (it?.name || "（削除された品目）") : (b.text || "");
+    const unit = it?.unit || "";
+    const cat = it?.category || "";
+    const du = it?.expiry ? daysUntil(it.expiry) : null;
+
+    const info = [];
+    if(isAuto && it){
+      info.push(`現在:${it.qty}${unit}`);
+      info.push(`ライン≤${it.reorder}${unit}`);
+      info.push(`目安:${it.buyQty}${unit}`);
+      if(cat) info.push(`カテゴリ:${cat}`);
+      if(du !== null){
+        if(du < 0) info.push(`期限切れ`);
+        else info.push(`期限:${du}日`);
+      }
+    }else{
+      info.push("手動メモ");
+    }
+
+    return `
+      <div class="buyCard" data-buyid="${escapeHtml(b.id)}">
+        <div class="buyLeft">
+          <div class="buyTitle" style="${b.done ? "text-decoration:line-through; opacity:.7" : ""}">${escapeHtml(title)}</div>
+          <div class="buySub">
+            <span class="tag">${isAuto ? "自動（在庫連動）" : "手動"}</span>
+            ${b.done ? `<span class="tag ok">完了</span>` : `<span class="tag warn">未購入</span>`}
+            ${info.map(p=>`<span class="tag">${escapeHtml(p)}</span>`).join("")}
+          </div>
+        </div>
+
+        <div class="buyActions">
+          ${isAuto && it ? `
+            <div class="quickRow">
+              <button class="btn small ok" data-pact="applySuggested">目安分反映</button>
+              <button class="btn small secondary" data-pact="apply1">+1</button>
+            </div>
+            <div class="qtyInputRow">
+              <input type="number" min="1" step="1" value="${it.buyQty}" data-pfield="n" />
+              <button class="btn small ok" data-pact="applyN">反映</button>
+            </div>
+          ` : `
+            <button class="checkBtn ${b.done ? "done" : ""}" data-pact="toggle">${b.done ? "完了✓" : "チェック"}</button>
+          `}
+          <button class="btn small danger" data-pact="del">削除</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function renderNotice(){
+    const unboughtAuto = buy.filter(b => b.type==="auto" && !b.done).length;
+    const dismissedAt = parseInt(localStorage.getItem(LS_NOTICE_DISMISS) || "0", 10) || 0;
+    const recentlyDismissed = (Date.now() - dismissedAt) < (6 * 60 * 60 * 1000); // 6時間は出さない
+
+    noticeCount.textContent = String(unboughtAuto);
+    if(unboughtAuto > 0 && !recentlyDismissed){
+      noticebar.classList.add("show");
+    }else{
+      noticebar.classList.remove("show");
+    }
+
+    if(unboughtAuto > 0){
+      buyBadge.style.display = "";
+      buyBadge.textContent = String(unboughtAuto);
+    }else{
+      buyBadge.style.display = "none";
+    }
+  }
+
+  function render(){
+    rebuildCategoryOptions();
+
+    // KPIs
+    kpiTotal.textContent = String(items.length);
+    kpiNeedBuy.textContent = String(items.filter(needBuy).length);
+    kpiExpire.textContent = String(items.filter(isExpireSoon).length);
+
+    // Filter + search
+    const q = (qEl.value||"").trim().toLowerCase();
+    const cat = filterCategoryEl.value;
+    const mode = filterModeEl.value;
+
+    const filtered = items
+      .filter(it => {
+        const hitQ = !q || (it.name + " " + it.category + " " + it.note).toLowerCase().includes(q);
+        const hitC = !cat || (it.category||"") === cat;
+        const hitM =
+          mode === "all" ? true :
+          mode === "needbuy" ? needBuy(it) :
+          mode === "expire" ? isExpireSoon(it) :
+          true;
+        return hitQ && hitC && hitM;
+      })
+      .sort((a,b) => {
+        const na = needBuy(a) ? 0 : 1;
+        const nb = needBuy(b) ? 0 : 1;
+        if(na !== nb) return na - nb;
+        const ea = isExpireSoon(a) ? 0 : 1;
+        const eb = isExpireSoon(b) ? 0 : 1;
+        if(ea !== eb) return ea - eb;
+        return (b.updatedAt||0) - (a.updatedAt||0);
+      });
+
+    listEl.innerHTML = filtered.length
+      ? filtered.map(itemRow).join("")
+      : `<div style="padding:14px; color:var(--muted);">表示する品目がありません。</div>`;
+
+    const sortedBuy = [...buy].sort((a,b)=> (a.done===b.done)? (b.createdAt-a.createdAt) : (a.done?1:-1));
+    buyListEl.innerHTML = sortedBuy.length
+      ? sortedBuy.map(buyRow).join("")
+      : `<div style="padding:14px; color:var(--muted);">購入リストは空です。</div>`;
+
+    // Purchase mode lists (購入対象を上に)
+    const pmBase = [...sortedBuy].sort((a,b)=>{
+      // auto first, then manual
+      const ta = (a.type==="auto") ? 0 : 1;
+      const tb = (b.type==="auto") ? 0 : 1;
+      if(ta !== tb) return ta - tb;
+      // unbought first
+      if(a.done !== b.done) return a.done ? 1 : -1;
+      return b.createdAt - a.createdAt;
+    });
+
+    const pmList = pmShowAllDone ? pmBase : pmBase.filter(b=>!b.done);
+
+    const autoCnt = buy.filter(b=>b.type==="auto" && !b.done).length;
+    const manualCnt = buy.filter(b=>b.type==="manual" && !b.done).length;
+    pmCount.textContent = `未購入 ${buy.filter(b=>!b.done).length}`;
+    pmAutoCount.textContent = `自動 ${autoCnt}`;
+    pmManualCount.textContent = `手動 ${manualCnt}`;
+
+    purchaseListEl.innerHTML = pmList.length
+      ? pmList.map(buyCard).join("")
+      : `<div style="padding:14px; color:var(--muted);">表示する項目がありません。</div>`;
+
+    renderNotice();
+  }
+
+  function clearForm(){
+    f.id.value = "";
+    f.name.value = "";
+    f.category.value = "";
+    f.unit.value = "";
+    f.expiry.value = "";
+    f.qty.value = 0;
+    f.reorder.value = 0;
+    f.buyQty.value = 1;
+    f.note.value = "";
+  }
+
+  function upsertItem(data){
+    const now = Date.now();
+    const it = {
+      id: data.id || uid(),
+      name: (data.name||"").trim(),
+      category: (data.category||"").trim(),
+      unit: (data.unit||"").trim(),
+      expiry: (data.expiry||"").trim(),
+      qty: Math.max(0, parseInt(data.qty,10) || 0),
+      reorder: Math.max(0, parseInt(data.reorder,10) || 0),
+      buyQty: Math.max(1, parseInt(data.buyQty,10) || 1),
+      note: (data.note||"").trim(),
+      updatedAt: now,
+    };
+    const idx = items.findIndex(x => x.id === it.id);
+    if(idx >= 0) items[idx] = it;
+    else items.unshift(it);
+    save();
+    syncAutoBuy();
+    render();
+  }
+
+  function removeItem(id){
+    items = items.filter(x => x.id !== id);
+    save();
+    syncAutoBuy();
+    render();
+  }
+
+  function adjustQty(id, delta){
+    const it = items.find(x => x.id === id);
+    if(!it) return;
+    it.qty = Math.max(0, (parseInt(it.qty,10)||0) + delta);
+    it.updatedAt = Date.now();
+    save();
+    syncAutoBuy();
+    render();
+  }
+
+  // Apply purchased qty from purchase mode (auto)
+  function applyBoughtForAuto(buyId, n){
+    const b = buy.find(x => x.id === buyId);
+    if(!b || b.type !== "auto") return;
+    const it = items.find(x => x.id === b.itemId);
+    if(!it) return;
+
+    const add = Math.max(1, parseInt(n,10) || 0);
+    it.qty = Math.max(0, it.qty + add);
+    it.updatedAt = Date.now();
+
+    // After increasing, if it no longer needs buy, it will be removed by syncAutoBuy().
+    save();
+    syncAutoBuy();
+    render();
+
+    // Optional: small haptic
+    try{ navigator.vibrate?.(20); }catch{}
+  }
+
+  function addManualBuy(text){
+    const t = (text||"").trim();
+    if(!t) return;
+    const exists = buy.some(b => b.type==="manual" && !b.done && (b.text||"").trim() === t);
+    if(!exists){
+      buy.unshift({id: uid(), type:"manual", text: t, done:false, createdAt: Date.now()});
+      save(); render();
+    }
+  }
+
+  function toggleBuy(id){
+    const b = buy.find(x => x.id === id);
+    if(!b) return;
+    b.done = !b.done;
+    save(); render();
+  }
+
+  function deleteBuy(id){
+    buy = buy.filter(x => x.id !== id);
+    save(); render();
+  }
+
+  function clearDone(){
+    buy = buy.filter(b => !b.done);
+    save(); render();
+  }
+
+  function copyUnbought(){
+    const lines = buy
+      .filter(b => !b.done)
+      .map(b => {
+        if(b.type === "manual") return b.text || "";
+        const it = items.find(x => x.id === b.itemId);
+        if(!it) return "";
+        const unit = it.unit || "";
+        const cat = it.category ? `（${it.category}）` : "";
+        return `${it.name} ${it.buyQty}${unit}${cat}`;
+      })
+      .filter(Boolean);
+
+    const text = lines.join("\n") || "（未購入は空です）";
+    navigator.clipboard?.writeText(text).then(()=> {
+      alert("未購入リストをコピーしました。");
+    }).catch(()=> {
+      prompt("コピーできない場合は、下の内容を手動でコピーしてください。", text);
+    });
+  }
+
+  // ---- Share / Backup (no server)
+  function packState(){
+    return { v: 3, items, buy, exportedAt: new Date().toISOString() };
+  }
+  function encodeShareCode(obj){
+    const json = JSON.stringify(obj);
+    const bytes = new TextEncoder().encode(json);
+    let bin = "";
+    bytes.forEach(b => bin += String.fromCharCode(b));
+    return btoa(bin);
+  }
+  function decodeShareCode(code){
+    const bin = atob(code.trim());
+    const bytes = Uint8Array.from(bin, c => c.charCodeAt(0));
+    const json = new TextDecoder().decode(bytes);
+    return JSON.parse(json);
+  }
+  function restoreFromObject(obj){
+    if(!obj || !obj.items || !obj.buy) throw new Error("形式が不正です。");
+    items = obj.items;
+    buy = obj.buy;
+    normalize();
+    save();
+    syncAutoBuy();
+    render();
+  }
+  function downloadJSON(){
+    const blob = new Blob([JSON.stringify(packState(), null, 2)], {type:"application/json"});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    const ts = new Date();
+    const y = ts.getFullYear();
+    const m = String(ts.getMonth()+1).padStart(2,"0");
+    const d = String(ts.getDate()).padStart(2,"0");
+    a.download = `inventory_backup_${y}${m}${d}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // ---- UI events
+  tabInv.addEventListener("click", () => {
+    tabInv.classList.add("active");
+    tabBuy.classList.remove("active");
+    viewInv.style.display = "";
+    viewBuy.style.display = "none";
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+  tabBuy.addEventListener("click", () => {
+    tabBuy.classList.add("active");
+    tabInv.classList.remove("active");
+    viewInv.style.display = "none";
+    viewBuy.style.display = "";
+    window.scrollTo({top:0, behavior:"smooth"});
+  });
+
+  // notice interactions
+  noticebar.addEventListener("click", (e) => {
+    // click banner body -> go purchase mode
+    if(e.target === noticeDismiss) return;
+    tabBuy.click();
+  });
+  noticeDismiss.addEventListener("click", (e) => {
+    e.stopPropagation();
+    localStorage.setItem(LS_NOTICE_DISMISS, String(Date.now()));
+    renderNotice();
+  });
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    upsertItem({
+      id: f.id.value,
+      name: f.name.value,
+      category: f.category.value,
+      unit: f.unit.value,
+      expiry: f.expiry.value,
+      qty: f.qty.value,
+      reorder: f.reorder.value,
+      buyQty: f.buyQty.value,
+      note: f.note.value,
+    });
+    clearForm();
+  });
+
+  el("btnClear").addEventListener("click", clearForm);
+
+  listEl.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if(!btn) return;
+    const row = e.target.closest(".item");
+    const id = row?.dataset?.itemid;
+    if(!id) return;
+    const act = btn.dataset.act;
+
+    if(act === "inc") adjustQty(id, +1);
+    if(act === "dec") adjustQty(id, -1);
+    if(act === "del"){
+      if(confirm("この品目を削除しますか？")) removeItem(id);
+    }
+    if(act === "edit"){
+      const it = items.find(x => x.id === id);
+      if(!it) return;
+      f.id.value = it.id;
+      f.name.value = it.name;
+      f.category.value = it.category;
+      f.unit.value = it.unit;
+      f.expiry.value = it.expiry;
+      f.qty.value = it.qty;
+      f.reorder.value = it.reorder;
+      f.buyQty.value = it.buyQty;
+      f.note.value = it.note;
+      window.scrollTo({top:0, behavior:"smooth"});
+    }
+  });
+
+  buyListEl.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if(!btn) return;
+    const row = e.target.closest(".item");
+    const id = row?.dataset?.buyid;
+    if(!id) return;
+    const act = btn.dataset.bact;
+    if(act === "toggle") toggleBuy(id);
+    if(act === "del") deleteBuy(id);
+  });
+
+  purchaseListEl.addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if(!btn) return;
+    const card = e.target.closest(".buyCard");
+    const id = card?.dataset?.buyid;
+    if(!id) return;
+
+    const act = btn.dataset.pact;
+
+    if(act === "toggle") toggleBuy(id);
+    if(act === "del") deleteBuy(id);
+
+    if(act === "applySuggested"){
+      const b = buy.find(x => x.id === id);
+      if(!b || b.type!=="auto") return;
+      const it = items.find(x => x.id === b.itemId);
+      if(!it) return;
+      applyBoughtForAuto(id, it.buyQty);
+    }
+    if(act === "apply1") applyBoughtForAuto(id, 1);
+
+    if(act === "applyN"){
+      const nInput = card.querySelector('input[data-pfield="n"]');
+      const n = nInput ? nInput.value : "1";
+      applyBoughtForAuto(id, n);
+    }
+  });
+
+  qEl.addEventListener("input", render);
+  filterCategoryEl.addEventListener("change", render);
+  filterModeEl.addEventListener("change", render);
+
+  el("btnCopy").addEventListener("click", copyUnbought);
+  el("pmCopy").addEventListener("click", copyUnbought);
+
+  el("btnClearDone").addEventListener("click", () => {
+    if(confirm("完了した項目を削除しますか？")) clearDone();
+  });
+
+  el("btnBuyAdd").addEventListener("click", () => {
+    const t = el("buyAddText").value;
+    addManualBuy(t);
+    el("buyAddText").value = "";
+  });
+
+  pmShowAll.addEventListener("click", () => {
+    pmShowAllDone = !pmShowAllDone;
+    pmShowAll.textContent = pmShowAllDone ? "未購入だけ表示" : "完了も表示";
+    render();
+  });
+
+  el("btnReset").addEventListener("click", () => {
+    if(confirm("すべてのデータを消去します。本当によろしいですか？")){
+      items = [];
+      buy = [];
+      save();
+      render();
+    }
+  });
+
+  el("btnDemo").addEventListener("click", () => {
+    if(items.length > 0 && !confirm("既存データがあるけどサンプルを追加しますか？")) return;
+    const demo = [
+      {name:"牛乳", category:"冷蔵庫", unit:"本", qty:1, reorder:0, buyQty:2, expiry: nextDate(3), note:"1L"},
+      {name:"卵", category:"冷蔵庫", unit:"パック", qty:0, reorder:1, buyQty:1, expiry: nextDate(10), note:"10個"},
+      {name:"冷凍唐揚げ", category:"冷凍庫", unit:"袋", qty:2, reorder:2, buyQty:2, expiry:"", note:"よく食べる"},
+      {name:"冷凍うどん", category:"冷凍庫", unit:"袋", qty:1, reorder:2, buyQty:3, expiry:"", note:""},
+      {name:"ティッシュ", category:"日用品", unit:"箱", qty:2, reorder:2, buyQty:5, expiry:"", note:""},
+      {name:"トイレットペーパー", category:"日用品", unit:"ロール", qty:4, reorder:6, buyQty:12, expiry:"", note:"ダブル"},
+      {name:"米", category:"常温", unit:"kg", qty:2, reorder:3, buyQty:5, expiry:"", note:""},
+    ];
+    for(const d of demo) upsertItem(d);
+  });
+
+  function nextDate(days){
+    const d = new Date();
+    d.setDate(d.getDate() + days);
+    const y = d.getFullYear();
+    const m = String(d.getMonth()+1).padStart(2,"0");
+    const dd = String(d.getDate()).padStart(2,"0");
+    return `${y}-${m}-${dd}`;
+  }
+
+  // Share dialog
+  function openDialog(){ dialog.classList.add("open"); }
+  function closeDialog(){ dialog.classList.remove("open"); }
+  el("btnShare").addEventListener("click", () => { openDialog(); shareArea.value=""; });
+  el("btnCloseDialog").addEventListener("click", closeDialog);
+  dialog.addEventListener("click", (e) => { if(e.target === dialog) closeDialog(); });
+
+  el("btnMakeCode").addEventListener("click", () => {
+    const code = encodeShareCode(packState());
+    shareArea.value = code;
+    shareArea.focus();
+    shareArea.select();
+    navigator.clipboard?.writeText(code).then(()=> alert("共有コードをコピーしました。")).catch(()=>{});
+  });
+
+  el("btnRestoreCode").addEventListener("click", () => {
+    const t = (shareArea.value||"").trim();
+    if(!t) return alert("共有コード（またはJSON）を貼り付けてください。");
+    try{
+      if(t.startsWith("{")) restoreFromObject(JSON.parse(t));
+      else restoreFromObject(decodeShareCode(t));
+      alert("復元しました。");
+      closeDialog();
+    }catch(err){
+      alert("復元に失敗しました。コード/JSONが正しいか確認してください。");
+    }
+  });
+
+  el("btnDownload").addEventListener("click", downloadJSON);
+  el("btnUpload").addEventListener("click", () => fileIn.click());
+  fileIn.addEventListener("change", async () => {
+    const file = fileIn.files?.[0];
+    if(!file) return;
+    try{
+      const txt = await file.text();
+      restoreFromObject(JSON.parse(txt));
+      alert("JSONから復元しました。");
+      closeDialog();
+    }catch{
+      alert("読み込みに失敗しました（JSON形式を確認してください）。");
+    }finally{
+      fileIn.value = "";
+    }
+  });
+
+  // Initial
+  load();
+  render();
+})();
+</script>
+</body>
+  </html>
