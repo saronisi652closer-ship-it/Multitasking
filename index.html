@@ -209,7 +209,15 @@
           <div class="label">メモ（調整意図・役割・ダメ計など）</div>
           <textarea id="notes" placeholder="例：S 最速100族抜き / ステロ苦手 など"></textarea>
         </div>
+        <div class="row" style="margin-top:8px;">
+  <button class="ghost" type="button" id="btnIVAll31">全V(31) ひな形</button>
+  <button class="ghost" type="button" id="btnIVS0">S0</button>
+  <button class="ghost" type="button" id="btnIVA0">A0</button>
+  <button class="ghost" type="button" id="btnIVC0">C0</button>
+  <button class="ghost" type="button" id="btnIVClear">IVクリア</button>
+        </div>
 
+        
         <div class="mutedline"></div>
         <div class="row">
           <button class="primary" id="btnSavePokemon">保存</button>
@@ -228,7 +236,9 @@
             <option value="BW/BW2">BW/BW2</option><option value="DPt">DPt</option><option value="HGSS">HGSS</option>
             <option value="その他">その他</option>
           </select>
-
+　　　　　　<select id="pokeFilterTeam">
+　　　　　　  <option value="">チーム：すべて</option>
+　　　　　　</select>
           <select id="pokeSort">
             <option value="updated_desc">更新日（新しい順）</option>
             <option value="name_asc">名前（あいうえお順）</option>
@@ -432,6 +442,11 @@
   const evPreset = $("evPreset");          // Ver1.1
   const btnApplyPreset = $("btnApplyPreset"); // Ver1.1
   const iv = $("iv");
+  const btnIVAll31 = $("btnIVAll31");
+const btnIVS0 = $("btnIVS0");
+const btnIVA0 = $("btnIVA0");
+const btnIVC0 = $("btnIVC0");
+const btnIVClear = $("btnIVClear");
   const notes = $("notes");
   const pokeEditorTitle = $("pokeEditorTitle");
   const btnSavePokemon = $("btnSavePokemon");
@@ -441,7 +456,8 @@
   const pokeEmpty = $("pokeEmpty");
   const pokeFilterGame = $("pokeFilterGame");
   const pokeSort = $("pokeSort");
-
+　const pokeFilterTeam = $("pokeFilterTeam");
+  
   function calcEV(){
     const t = toInt(evH.value)+toInt(evA.value)+toInt(evB.value)+toInt(evC.value)+toInt(evD.value)+toInt(evS.value);
     evTotal.textContent = String(t);
@@ -545,9 +561,20 @@
     const q = (search.value||"").trim().toLowerCase();
     const gf = pokeFilterGame.value;
     const sort = pokeSort.value;
-
+　　const tf = (pokeFilterTeam.value || "");
+    
     let items = pokeDB.slice();
+    // チーム候補を自動生成（既存データから）
+const teams = Array.from(new Set(pokeDB.map(x => (x.team || "").trim()).filter(Boolean)))
+  .sort((a,b)=>a.localeCompare(b,"ja"));
+
+const current = pokeFilterTeam.value || "";
+pokeFilterTeam.innerHTML = `<option value="">チーム：すべて</option>` +
+  teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
+
+pokeFilterTeam.value = current;
     if(gf) items = items.filter(x=>x.game===gf);
+    if(tf) items = items.filter(x => (x.team || "") === tf);
     if(q) items = items.filter(x=>pokeSearchText(x).includes(q));
 
     if(sort==="updated_desc") items.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
@@ -889,7 +916,8 @@
 
   pokeFilterGame.onchange = renderAll;
   pokeSort.onchange = renderAll;
-
+　pokeFilterTeam.onchange = renderAll;
+  
   // ✅ EVテンプレ適用（コロンあり/なし両対応）
   btnApplyPreset.onclick = () => {
     const v = (evPreset.value || "").trim();
@@ -926,6 +954,22 @@
     calcEV();
     setStatus("テンプレを適用しました");
   };
+  function ivAppend(token){
+  const cur = (iv.value || "").trim();
+  if(!cur) { iv.value = token; return; }
+  // すでに入ってたら何もしない
+  if(cur.includes(token)) return;
+  iv.value = cur + " / " + token;
+}
+
+btnIVAll31.onclick = () => {
+  iv.value = "H31 A31 B31 C31 D31 S31";
+  setStatus("全V(31) ひな形を入れました");
+};
+btnIVS0.onclick = () => { ivAppend("S0"); setStatus("S0 を追加しました"); };
+btnIVA0.onclick = () => { ivAppend("A0"); setStatus("A0 を追加しました"); };
+btnIVC0.onclick = () => { ivAppend("C0"); setStatus("C0 を追加しました"); };
+btnIVClear.onclick = () => { iv.value=""; setStatus("IVをクリアしました"); };
 
   pokeList.addEventListener("click", (e)=>{
     const t = e.target;
@@ -1009,3 +1053,4 @@
 </script>
 </body>
           </html>
+
