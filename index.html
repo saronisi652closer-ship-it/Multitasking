@@ -99,6 +99,14 @@
       padding-bottom:6px;
       -webkit-overflow-scrolling: touch;
     }
+    /* === 横ズレ完全対策（最重要） === */
+body { overflow-x: hidden; }
+.wrap { max-width: 1100px; width: 100%; padding-left: 12px; padding-right: 12px; }
+.card { max-width: 100%; }
+.row, .tabs { max-width: 100%; }
+
+/* select / button が横に押し広げないようにする */
+select, button { max-width: 100%; }
   </style>
 </head>
 
@@ -1136,3 +1144,4 @@
 </script>
 </body>
 </html>
+
