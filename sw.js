@@ -35,5 +35,12 @@ self.addEventListener("fetch", (event) => {
       }).catch(() => caches.match("./index.html"));
     })
   );
-
+self.addEventListener("install", (event) => {
+  self.skipWaiting();
 });
+
+self.addEventListener("activate", (event) => {
+  event.waitUntil(self.clients.claim());
+});
+});
+
