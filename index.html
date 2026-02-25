@@ -107,6 +107,8 @@ body { overflow-x: hidden; }
 
 /* select / button が横に押し広げないようにする */
 select, button { max-width: 100%; }
+    /* flex内の要素が縮まないのが原因の時の保険 */
+.row > * { min-width: 0; }
   </style>
 </head>
 
@@ -1144,4 +1146,5 @@ select, button { max-width: 100%; }
 </script>
 </body>
 </html>
+
 
