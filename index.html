@@ -141,15 +141,19 @@
           </div>
         </div>
 
-        <div class="two" style="margin-top:10px;">
-          <div>
-            <div class="label">テラスタイプ / タイプ（自由入力）</div>
-            <input id="tera" placeholder="例：はがね / ひこう" />
-          </div>
-          <div>
-            <div class="label">タグ（カンマ区切り）</div>
-            <input id="pokeTags" placeholder="例：積み, 受け崩し, 初手" />
-          </div>
+        <div class="three" style="margin-top:10px;">
+  <div>
+    <div class="label">テラスタイプ / タイプ（自由入力）</div>
+    <input id="tera" placeholder="例：はがね / ひこう" />
+  </div>
+  <div>
+    <div class="label">パーティ名（チーム）</div>
+    <input id="pokeTeam" placeholder="例：SVランクマS1 / 旅パ / 周回" />
+  </div>
+  <div>
+    <div class="label">タグ（カンマ区切り）</div>
+    <input id="pokeTags" placeholder="例：積み, 受け崩し, 初手" />
+  </div>
         </div>
 
         <div style="margin-top:10px;">
@@ -176,7 +180,16 @@
           </div>
           <div class="row" style="margin-top:10px;justify-content:space-between;">
             <span class="small">EV合計: <span id="evTotal" class="mono">0</span>（目安: 510）</span>
-            <button class="ghost" id="btnEV252">テンプレ: 252/252/4</button>
+            <select id="evPreset">
+  <option value="">EVテンプレを選択</option>
+  <option value="H4,A252,S252">H4 A252 S252（アタッカー）</option>
+  <option value="H252,B252,D4">H252 B252 D4（物理受け）</option>
+  <option value="H252,D252,B4">H252 D252 B4（特殊受け）</option>
+  <option value="H252,A252,B4">H252 A252 B4（耐久アタッカー）</option>
+  <option value="H252,C252,S4">H252 C252 S4（特殊耐久寄り）</option>
+  <option value="H244,S252,B12">H244 S252 B12（例：最速＋耐久調整）</option>
+</select>
+<button class="ghost" id="btnApplyPreset">テンプレ適用</button>
           </div>
         </div>
 
@@ -949,4 +962,5 @@
 })();
 </script>
 </body>
+
 </html>
