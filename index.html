@@ -1,218 +1,697 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>趣味管理アプリ（ポケモン / 遊戯王）</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>趣味管理アプリ（ポケモン / 遊戯王）</title>
 
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0b0c10">
-<link rel="icon" href="icon-192.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0b0c10">
+  <link rel="icon" href="icon-192.svg">
 
-<style>
-:root{
-  --bg:#0b0c10;
-  --card:#14161d;
-  --muted:#aeb5c3;
-  --text:#eef2ff;
-  --accent:#6ee7b7;
-  --danger:#fb7185;
-  --line:#24283a;
-}
+  <style>
+    :root { --bg:#0b0c10; --card:#14161d; --muted:#aeb5c3; --text:#eef2ff; --accent:#6ee7b7; --danger:#fb7185; --line:#24283a; }
+    *{box-sizing:border-box}
+    html, body { max-width: 100%; overflow-x: hidden; }
+    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:var(--bg);color:var(--text)}
 
-*{box-sizing:border-box}
-html,body{
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;
-  overflow-x:hidden; /* 横ズレ根絶 */
-}
+    header{position:sticky;top:0;z-index:10;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .wrap{max-width:1100px;margin:0 auto;padding:12px 14px}
+    h1{font-size:16px;margin:0 0 10px}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 
-header{
-  position:sticky;
-  top:0;
-  z-index:10;
-  background:rgba(11,12,16,.95);
-  border-bottom:1px solid var(--line);
-}
+    input,textarea,select,button{
+      font:inherit;color:var(--text);background:#0f1117;border:1px solid var(--line);
+      border-radius:12px;padding:10px 12px
+    }
+    textarea{min-height:90px;resize:vertical}
+    button{cursor:pointer;background:#121626}
+    button.primary{border-color:rgba(110,231,183,.35);background:rgba(110,231,183,.12)}
+    button.primary:hover{background:rgba(110,231,183,.18)}
+    button.danger{border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.12)}
+    button.danger:hover{background:rgba(251,113,133,.18)}
+    button.ghost:hover{background:#151a2c}
 
-.wrap{
-  max-width:1100px;
-  margin:0 auto;
-  padding:12px;
-}
+    .tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .tab{padding:8px 12px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+    .tab.active{border-color:rgba(110,231,183,.45);color:var(--text);background:rgba(110,231,183,.10)}
 
-h1{font-size:16px;margin:0 0 10px}
+    main{padding:14px}
+    .grid{display:grid;grid-template-columns:1fr;gap:14px}
+    @media(min-width:980px){.grid{grid-template-columns:420px 1fr}}
 
-.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
+    .card h2{margin:0 0 10px;font-size:14px;color:var(--muted);font-weight:600}
+    .label{font-size:12px;color:var(--muted);margin:0 0 6px 2px}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .six{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
 
-input,textarea,select,button{
-  font:inherit;
-  background:#0f1117;
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px 12px;
-  color:var(--text);
-  max-width:100%;
-}
+    .list{display:flex;flex-direction:column;gap:10px}
+    .item{border:1px solid var(--line);border-radius:16px;padding:12px;background:#10131b}
+    .item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+    .title{font-weight:800;font-size:16px;line-height:1.2}
+    .sub{color:var(--muted);font-size:12px;margin-top:4px}
+    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .tag{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Noto Sans Mono",monospace}
+    .mutedline{border-top:1px dashed #2a2f44;margin:12px 0}
+    .small{font-size:12px;color:var(--muted)}
+    .hide{display:none}
+    .pill{display:inline-flex;gap:6px;align-items:center;padding:5px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
+    .pill strong{color:var(--text);font-weight:700}
 
-button{cursor:pointer}
-button.primary{background:rgba(110,231,183,.15);border-color:rgba(110,231,183,.4)}
-button.danger{background:rgba(251,113,133,.15);border-color:rgba(251,113,133,.4)}
-button.ghost{background:#121626}
+    /* ===== Android縦スクロール最適化（横はみ出し対策） ===== */
+    @media (max-width: 720px) {
+      .wrap{padding:10px 12px}
+      .two{grid-template-columns:1fr}
+      .three{grid-template-columns:1fr}
+      .six{grid-template-columns:repeat(3,1fr)}
+      header .row { align-items: stretch; }
+      #search { min-width:0 !important; width:100% !important; }
+      .row > button, .row > select { width:auto; }
+    }
+    @media (max-width: 420px) {
+      .six{grid-template-columns:repeat(2,1fr)}
+    }
 
-.tabs{display:flex;gap:8px}
-.tab{
-  padding:8px 14px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  color:var(--muted);
-}
-.tab.active{
-  background:rgba(110,231,183,.15);
-  border-color:rgba(110,231,183,.5);
-  color:var(--text);
-}
+    /* チームタブ */
+    .teamtab{
+      white-space:nowrap;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      color:var(--muted);
+      background:#0f1117;
+      cursor:pointer;
+      flex: 0 0 auto;
+    }
+    .teamtab.active{
+      border-color:rgba(110,231,183,.45);
+      color:var(--text);
+      background:rgba(110,231,183,.10);
+    }
+    #teamTabs{
+      display:flex;
+      gap:8px;
+      overflow-x:auto;
+      flex-wrap:nowrap;
+      padding-bottom:6px;
+      -webkit-overflow-scrolling: touch;
+    }
 
-.card{
-  background:var(--card);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:14px;
-  max-width:100%;
-}
+    /* ============================
+       ✅ 見切れ対策（A）：スマホは縦積みにして右切れ根絶
+       ============================ */
+    @media (max-width: 520px) {
+      /* 一覧カードの「編集/削除/不足」ボタンが横に伸びて切れるのを防ぐ */
+      .item-head { flex-wrap: wrap; }
+      .item-head > .row {
+        width: 100%;
+        flex-wrap: wrap !important; /* HTML内の nowrap を上書き */
+        gap: 8px;
+      }
+      .item-head > .row button { width: 100%; }
 
-.card h2{
-  font-size:14px;
-  margin:0 0 10px;
-  color:var(--muted);
-}
-
-.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.six{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
-
-.list{display:flex;flex-direction:column;gap:10px}
-
-.item{
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:12px;
-  background:#10131b;
-}
-
-.item-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-start;
-  gap:10px;
-}
-
-.title{font-weight:800;font-size:16px}
-.sub{font-size:12px;color:var(--muted)}
-
-.tag{
-  font-size:12px;
-  padding:3px 8px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  color:var(--muted);
-}
-
-/* ===== スマホ最適化 ===== */
-@media(max-width:520px){
-
-  .wrap{padding:8px}
-
-  .two{grid-template-columns:1fr}
-  .three{grid-template-columns:1fr}
-  .six{grid-template-columns:repeat(3,1fr)}
-
-  /* ===== 右切れ修正A：ボタン縦並び ===== */
-  .item-head{flex-wrap:wrap;}
-  .item-head > .row{
-    width:100%;
-    flex-wrap:wrap;
-    gap:8px;
-  }
-  .item-head > .row button{
-    width:100%;
-  }
-
-}
-
-</style>
+      /* EVテンプレ（select + 適用ボタン）も縦積みで見切れ防止 */
+      #evPreset { width: 100% !important; }
+      #btnApplyPreset { width: 100% !important; margin-left: 0 !important; }
+    }
+  </style>
 </head>
 
 <body>
-
 <header>
   <div class="wrap">
-    <h1>趣味管理アプリ</h1>
-    <div class="tabs">
-      <button class="tab active" id="tabPokemon">ポケモン</button>
-      <button class="tab" id="tabYgo">遊戯王</button>
+    <h1>趣味管理アプリ（PWA）</h1>
+    <div class="row" style="justify-content:space-between">
+      <div class="tabs">
+        <button class="tab active" id="tabPokemon">ポケモン</button>
+        <button class="tab" id="tabYgo">遊戯王</button>
+      </div>
+      <div class="row">
+        <input id="search" type="search" placeholder="検索（共通）" style="min-width:220px;flex:1">
+        <span class="pill">件数: <strong id="count">0</strong></span>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:10px;">
+      <button class="primary" id="btnNew">＋ 新規</button>
+      <button class="ghost" id="btnExport">エクスポート</button>
+      <button class="ghost" id="btnImport">インポート</button>
+      <button class="danger" id="btnWipe">全削除</button>
+      <span class="small" id="status"></span>
     </div>
   </div>
 </header>
 
 <main class="wrap">
-
+  <!-- Pokemon -->
   <section id="viewPokemon">
-    <div class="card">
-      <h2>ポケモン登録</h2>
+    <div class="grid">
+      <section class="card">
+        <h2 id="pokeEditorTitle">ポケモン：新規 / 編集</h2>
 
-      <div class="two">
-        <input id="pname" placeholder="ポケモン名">
-        <input id="nature" placeholder="性格">
-      </div>
+        <div class="two">
+          <div>
+            <div class="label">作品</div>
+            <select id="pokeGame">
+              <option value="">未設定</option>
+              <option value="SV">SV</option>
+              <option value="剣盾">剣盾</option>
+              <option value="BDSP">BDSP</option>
+              <option value="PLA">PLA</option>
+              <option value="SM/USUM">SM/USUM</option>
+              <option value="XY/ORAS">XY/ORAS</option>
+              <option value="BW/BW2">BW/BW2</option>
+              <option value="DPt">DPt</option>
+              <option value="HGSS">HGSS</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+          <div>
+            <div class="label">用途</div>
+            <select id="pokeMode">
+              <option value="">未設定</option>
+              <option value="シングル">シングル</option>
+              <option value="ダブル">ダブル</option>
+              <option value="ランクマ">ランクマ</option>
+              <option value="フレ戦">フレ戦</option>
+              <option value="周回">周回</option>
+              <option value="育成中">育成中</option>
+            </select>
+          </div>
+        </div>
 
-      <div class="two" style="margin-top:10px">
-        <input id="ability" placeholder="特性">
-        <input id="item" placeholder="持ち物">
-      </div>
+        <div class="two" style="margin-top:10px;">
+          <div>
+            <div class="label">ポケモン名</div>
+            <input id="pname" placeholder="例：カイリュー" />
+          </div>
+          <div>
+            <div class="label">性格</div>
+            <input id="nature" placeholder="例：いじっぱり" />
+          </div>
+        </div>
 
-      <div style="margin-top:10px">
-        <input id="tera" placeholder="テラスタイプ">
-      </div>
+        <div class="two" style="margin-top:10px;">
+          <div>
+            <div class="label">特性</div>
+            <input id="ability" placeholder="例：マルチスケイル" />
+          </div>
+          <div>
+            <div class="label">持ち物</div>
+            <input id="item" placeholder="例：たべのこし" />
+          </div>
+        </div>
 
-      <div style="margin-top:10px">
-        <input id="pokeTeam" placeholder="チーム名">
-      </div>
+        <div class="three" style="margin-top:10px;">
+          <div>
+            <div class="label">テラスタイプ / タイプ（自由入力）</div>
+            <input id="tera" placeholder="例：はがね / ひこう" />
+          </div>
+          <div>
+            <div class="label">パーティ名（チーム）</div>
+            <input id="pokeTeam" placeholder="例：SVランクマS1 / 旅パ / 周回" />
+          </div>
+          <div>
+            <div class="label">タグ（カンマ区切り）</div>
+            <input id="pokeTags" placeholder="例：積み, 受け崩し, 初手" />
+          </div>
+        </div>
 
-      <div style="margin-top:10px">
-        <input id="m1" placeholder="技1">
-        <input id="m2" placeholder="技2">
-        <input id="m3" placeholder="技3">
-        <input id="m4" placeholder="技4">
-      </div>
+        <div style="margin-top:10px;">
+          <div class="label">技（4つ）</div>
+          <div class="two">
+            <input id="m1" placeholder="技1" />
+            <input id="m2" placeholder="技2" />
+          </div>
+          <div class="two" style="margin-top:10px;">
+            <input id="m3" placeholder="技3" />
+            <input id="m4" placeholder="技4" />
+          </div>
+        </div>
 
-      <div style="margin-top:10px">
-        <button class="primary" id="btnSavePokemon">保存</button>
-      </div>
-    </div>
+        <div style="margin-top:10px;">
+          <div class="label">努力値（EV）</div>
+          <div class="six">
+            <div><div class="label">H</div><input id="evH" inputmode="numeric" placeholder="0"></div>
+            <div><div class="label">A</div><input id="evA" inputmode="numeric" placeholder="0"></div>
+            <div><div class="label">B</div><input id="evB" inputmode="numeric" placeholder="0"></div>
+            <div><div class="label">C</div><input id="evC" inputmode="numeric" placeholder="0"></div>
+            <div><div class="label">D</div><input id="evD" inputmode="numeric" placeholder="0"></div>
+            <div><div class="label">S</div><input id="evS" inputmode="numeric" placeholder="0"></div>
+          </div>
 
-    <div class="card" style="margin-top:14px">
-      <h2>ポケモン一覧</h2>
-      <div class="list" id="pokeList"></div>
+          <div class="row" style="margin-top:10px;justify-content:space-between;">
+            <span class="small">EV合計: <span id="evTotal" class="mono">0</span>（目安: 510）</span>
+
+            <div class="row">
+              <select id="evPreset">
+                <option value="">EVテンプレを選択</option>
+                <option value="H4,A252,S252">H4 A252 S252（アタッカー）</option>
+                <option value="H252,B252,D4">H252 B252 D4（物理受け）</option>
+                <option value="H252,D252,B4">H252 D252 B4（特殊受け）</option>
+                <option value="H252,A252,B4">H252 A252 B4（耐久アタッカー）</option>
+                <option value="H252,C252,S4">H252 C252 S4（特殊耐久寄り）</option>
+                <option value="H244,S252,B12">H244 S252 B12（最速＋耐久調整例）</option>
+              </select>
+              <button class="ghost" id="btnApplyPreset" type="button">テンプレ適用</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="label">個体値（IV・任意）</div>
+          <input id="iv" placeholder="例：H31 A31 B31 C× D31 S31 / S0 など" />
+          <div class="row" style="margin-top:8px;">
+            <button class="ghost" type="button" id="btnIVAll31">全V(31) ひな形</button>
+            <button class="ghost" type="button" id="btnIVS0">S0</button>
+            <button class="ghost" type="button" id="btnIVA0">A0</button>
+            <button class="ghost" type="button" id="btnIVC0">C0</button>
+            <button class="ghost" type="button" id="btnIVClear">IVクリア</button>
+          </div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="label">メモ（調整意図・役割・ダメ計など）</div>
+          <textarea id="notes" placeholder="例：S 最速100族抜き / ステロ苦手 など"></textarea>
+        </div>
+
+        <div class="mutedline"></div>
+        <div class="row">
+          <button class="primary" id="btnSavePokemon" type="button">保存</button>
+          <button class="ghost" id="btnClearPokemon" type="button">入力クリア</button>
+          <button class="danger hide" id="btnDeletePokemon" type="button">削除</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>ポケモン：一覧</h2>
+
+        <!-- チームタブ -->
+        <div id="teamTabs"></div>
+
+        <div class="row">
+          <select id="pokeFilterGame">
+            <option value="">作品：すべて</option>
+            <option value="SV">SV</option><option value="剣盾">剣盾</option><option value="BDSP">BDSP</option>
+            <option value="PLA">PLA</option><option value="SM/USUM">SM/USUM</option><option value="XY/ORAS">XY/ORAS</option>
+            <option value="BW/BW2">BW/BW2</option><option value="DPt">DPt</option><option value="HGSS">HGSS</option>
+            <option value="その他">その他</option>
+          </select>
+
+          <!-- チーム絞り込み（タブが「すべて」の時だけ効く） -->
+          <select id="pokeFilterTeam">
+            <option value="">チーム：すべて</option>
+          </select>
+
+          <select id="pokeSort">
+            <option value="updated_desc">更新日（新しい順）</option>
+            <option value="name_asc">名前（あいうえお順）</option>
+          </select>
+        </div>
+
+        <div class="list" id="pokeList" style="margin-top:10px;"></div>
+        <div id="pokeEmpty" class="small" style="margin-top:10px;">まだ登録がありません。</div>
+      </section>
     </div>
   </section>
 
-  <section id="viewYgo" style="display:none">
-    <div class="card">
-      <h2>遊戯王デッキ登録</h2>
-      <input id="deckName" placeholder="デッキ名">
-      <textarea id="deckMain" placeholder="メインデッキ"></textarea>
-      <button class="primary" id="btnSaveDeck">保存</button>
+  <!-- Yu-Gi-Oh -->
+  <section id="viewYgo" class="hide">
+    <div class="grid">
+      <section class="card">
+        <h2 id="ygoEditorTitle">遊戯王：デッキ 新規 / 編集</h2>
+
+        <div class="two">
+          <div>
+            <div class="label">分類（任意）</div>
+            <select id="ygoGame">
+              <option value="">未設定</option>
+              <option value="OCG">OCG</option>
+              <option value="MD">MD</option>
+              <option value="LOTD">LOTD</option>
+              <option value="その他">その他</option>
+            </select>
+          </div>
+          <div>
+            <div class="label">デッキ名</div>
+            <input id="deckName" placeholder="例：獄神 後攻OTK" />
+          </div>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="label">メイン（1行に1枚：例「灰流うらら x2」 or 「灰流うらら 2」）</div>
+          <textarea id="deckMain" placeholder="カード名 x枚数 を行ごとに"></textarea>
+        </div>
+        <div style="margin-top:10px;">
+          <div class="label">エクストラ（同じ形式）</div>
+          <textarea id="deckExtra"></textarea>
+        </div>
+        <div style="margin-top:10px;">
+          <div class="label">サイド（同じ形式）</div>
+          <textarea id="deckSide"></textarea>
+        </div>
+
+        <div style="margin-top:10px;">
+          <div class="label">タグ（カンマ区切り）</div>
+          <input id="ygoTags" placeholder="例：後攻, OTK, カジュアル" />
+        </div>
+        <div style="margin-top:10px;">
+          <div class="label">メモ</div>
+          <textarea id="ygoNotes"></textarea>
+        </div>
+
+        <div class="mutedline"></div>
+        <div class="row">
+          <button class="primary" id="btnSaveDeck" type="button">保存</button>
+          <button class="ghost" id="btnClearDeck" type="button">入力クリア</button>
+          <button class="danger hide" id="btnDeleteDeck" type="button">削除</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>遊戯王：所持カード（手入力）</h2>
+        <div class="two">
+          <div>
+            <div class="label">カード名</div>
+            <input id="ownName" placeholder="例：灰流うらら" />
+          </div>
+          <div>
+            <div class="label">所持枚数（0〜3）</div>
+            <input id="ownCount" inputmode="numeric" placeholder="0" />
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px;">
+          <button class="primary" id="btnAddOwn" type="button">追加/更新</button>
+          <button class="ghost" id="btnClearOwn" type="button">クリア</button>
+        </div>
+
+        <div class="mutedline"></div>
+        <h2>遊戯王：一覧 / 不足カード</h2>
+        <div class="row">
+          <select id="ygoSort">
+            <option value="updated_desc">更新日（新しい順）</option>
+            <option value="name_asc">デッキ名（あいうえお順）</option>
+          </select>
+          <button class="ghost" id="btnShowMissing" type="button">選択デッキの不足を見る</button>
+        </div>
+
+        <div class="list" id="deckList" style="margin-top:10px;"></div>
+        <div id="deckEmpty" class="small" style="margin-top:10px;">まだデッキがありません。</div>
+
+        <div class="mutedline"></div>
+        <div id="missingBox" class="hide">
+          <div class="title" id="missingTitle" style="font-size:14px;">不足カード</div>
+          <div class="small">所持カードと照合して、不足分だけ表示します。</div>
+          <div class="list" id="missingList" style="margin-top:10px;"></div>
+          <button class="ghost" id="btnCloseMissing" type="button" style="margin-top:10px;">閉じる</button>
+        </div>
+
+        <div class="mutedline"></div>
+        <div class="small">
+          <strong>所持カード一覧（名前→枚数）</strong>
+          <div id="ownList" class="mono" style="margin-top:8px;white-space:pre-wrap;"></div>
+        </div>
+      </section>
     </div>
   </section>
-
 </main>
 
-<script>
-// ※ここは既存のJSそのままでOK（省略してますが前回の保存処理はそのまま使えます）
-</script>
+<input class="hide" id="fileInput" type="file" accept="application/json" />
 
-</body>
-</html>
+<script>
+(() => {
+  // ---- PWA register
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
+  }
+
+  // ---- Storage keys（ここは変えない：既存データを保持するため）
+  const K = {
+    pokemon: "app_v1_pokemon",
+    ygoDecks: "app_v1_ygo_decks",
+    ygoOwn: "app_v1_ygo_own"
+  };
+
+  // ---- helpers
+  const $ = (id) => document.getElementById(id);
+  const nowISO = () => new Date().toISOString();
+  const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
+  const toInt = (v) => {
+    const n = parseInt(String(v||"").replace(/[^\d-]/g,""), 10);
+    return Number.isFinite(n) ? n : 0;
+  };
+  const esc = (s) => String(s ?? "")
+    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
+  const tags = (s) => (s||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,40);
+
+  const load = (key, fallback) => {
+    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
+    catch { return fallback; }
+  };
+  const save = (key, val) => localStorage.setItem(key, JSON.stringify(val));
+
+  const status = $("status");
+  const setStatus = (msg) => { status.textContent = msg; if (msg) setTimeout(()=>status.textContent="", 2500); };
+
+  // ---- tabs
+  const tabPokemon = $("tabPokemon");
+  const tabYgo = $("tabYgo");
+  const viewPokemon = $("viewPokemon");
+  const viewYgo = $("viewYgo");
+
+  let activeTab = "pokemon"; // pokemon | ygo
+  function setTab(t){
+    activeTab = t;
+    if (t === "pokemon") {
+      tabPokemon.classList.add("active"); tabYgo.classList.remove("active");
+      viewPokemon.classList.remove("hide"); viewYgo.classList.add("hide");
+    } else {
+      tabYgo.classList.add("active"); tabPokemon.classList.remove("active");
+      viewYgo.classList.remove("hide"); viewPokemon.classList.add("hide");
+    }
+    renderAll();
+  }
+  tabPokemon.onclick = () => setTab("pokemon");
+  tabYgo.onclick = () => setTab("ygo");
+
+  // ---- common search
+  const search = $("search");
+
+  // ---- global buttons
+  const btnNew = $("btnNew");
+  const btnExport = $("btnExport");
+  const btnImport = $("btnImport");
+  const btnWipe = $("btnWipe");
+  const fileInput = $("fileInput");
+
+  // =========================
+  // Pokemon module
+  // =========================
+  let pokeDB = load(K.pokemon, []);
+  let pokeEditing = null;
+
+  // チームタブ状態（""=すべて, "__UNSET__"=未設定, それ以外=チーム名）
+  const teamTabs = $("teamTabs");
+  let activeTeamTab = "";
+
+  const pokeGame = $("pokeGame");
+  const pokeMode = $("pokeMode");
+  const pname = $("pname");
+  const nature = $("nature");
+  const ability = $("ability");
+  const item = $("item");
+  const tera = $("tera");
+  const pokeTeam = $("pokeTeam");
+  const pokeTags = $("pokeTags");
+  const m1 = $("m1"), m2 = $("m2"), m3 = $("m3"), m4 = $("m4");
+  const evH = $("evH"), evA = $("evA"), evB = $("evB"), evC = $("evC"), evD = $("evD"), evS = $("evS");
+  const evTotal = $("evTotal");
+  const evPreset = $("evPreset");
+  const btnApplyPreset = $("btnApplyPreset");
+  const iv = $("iv");
+  const notes = $("notes");
+
+  const btnIVAll31 = $("btnIVAll31");
+  const btnIVS0 = $("btnIVS0");
+  const btnIVA0 = $("btnIVA0");
+  const btnIVC0 = $("btnIVC0");
+  const btnIVClear = $("btnIVClear");
+
+  const pokeEditorTitle = $("pokeEditorTitle");
+  const btnSavePokemon = $("btnSavePokemon");
+  const btnClearPokemon = $("btnClearPokemon");
+  const btnDeletePokemon = $("btnDeletePokemon");
+  const pokeList = $("pokeList");
+  const pokeEmpty = $("pokeEmpty");
+  const pokeFilterGame = $("pokeFilterGame");
+  const pokeFilterTeam = $("pokeFilterTeam");
+  const pokeSort = $("pokeSort");
+
+  function calcEV(){
+    const t = toInt(evH.value)+toInt(evA.value)+toInt(evB.value)+toInt(evC.value)+toInt(evD.value)+toInt(evS.value);
+    evTotal.textContent = String(t);
+  }
+  [evH,evA,evB,evC,evD,evS].forEach(x=>{
+    x.addEventListener("input", calcEV);
+    x.addEventListener("blur", (e)=>{ if(!e.target.value.trim()) e.target.value="0"; e.target.value=String(toInt(e.target.value)); calcEV(); });
+  });
+
+  function pokeClear(){
+    pokeEditing = null;
+    pokeEditorTitle.textContent = "ポケモン：新規 / 編集";
+    pokeGame.value = ""; pokeMode.value="";
+    pname.value=""; nature.value=""; ability.value=""; item.value="";
+    tera.value=""; pokeTeam.value=""; pokeTags.value="";
+    m1.value=""; m2.value=""; m3.value=""; m4.value="";
+    evH.value=evA.value=evB.value=evC.value=evD.value=evS.value="0";
+    iv.value=""; notes.value="";
+    btnDeletePokemon.classList.add("hide");
+    calcEV();
+  }
+
+  function pokeFill(it){
+    pokeEditing = it.id;
+    pokeEditorTitle.textContent = `編集中：${it.pname || "（無名）"}`;
+    pokeGame.value = it.game || "";
+    pokeMode.value = it.mode || "";
+    pname.value = it.pname || "";
+    nature.value = it.nature || "";
+    ability.value = it.ability || "";
+    item.value = it.item || "";
+    tera.value = it.tera || "";
+    pokeTeam.value = it.team || "";
+    pokeTags.value = (it.tags||[]).join(", ");
+    const mv = it.moves || ["","","",""];
+    m1.value=mv[0]||""; m2.value=mv[1]||""; m3.value=mv[2]||""; m4.value=mv[3]||"";
+    const ev = it.ev || {H:0,A:0,B:0,C:0,D:0,S:0};
+    evH.value=String(ev.H??0); evA.value=String(ev.A??0); evB.value=String(ev.B??0);
+    evC.value=String(ev.C??0); evD.value=String(ev.D??0); evS.value=String(ev.S??0);
+    iv.value = it.iv || "";
+    notes.value = it.notes || "";
+    btnDeletePokemon.classList.remove("hide");
+    calcEV();
+    window.scrollTo({top:0,behavior:"smooth"});
+  }
+
+  function pokeUpsert(){
+    const it = {
+      id: pokeEditing || uid(),
+      game: pokeGame.value,
+      mode: pokeMode.value,
+      pname: pname.value.trim(),
+      nature: nature.value.trim(),
+      ability: ability.value.trim(),
+      item: item.value.trim(),
+      tera: tera.value.trim(),
+      team: pokeTeam.value.trim(),
+      tags: tags(pokeTags.value),
+      moves: [m1.value.trim(), m2.value.trim(), m3.value.trim(), m4.value.trim()].filter(Boolean),
+      ev: { H: toInt(evH.value), A: toInt(evA.value), B: toInt(evB.value), C: toInt(evC.value), D: toInt(evD.value), S: toInt(evS.value) },
+      iv: iv.value.trim(),
+      notes: notes.value.trim(),
+      updatedAt: nowISO(),
+      createdAt: nowISO()
+    };
+    if (!it.pname) return setStatus("ポケモン名を入れてください");
+    const idx = pokeDB.findIndex(x=>x.id===it.id);
+    if (idx >= 0){
+      it.createdAt = pokeDB[idx].createdAt || it.createdAt;
+      pokeDB[idx] = it;
+      setStatus("更新しました");
+    } else {
+      pokeDB.unshift(it);
+      setStatus("保存しました");
+    }
+    save(K.pokemon, pokeDB);
+    pokeFill(it);
+    renderAll();
+  }
+
+  function pokeRemove(){
+    if(!pokeEditing) return;
+    const it = pokeDB.find(x=>x.id===pokeEditing);
+    if(!it) return;
+    if(!confirm(`${it.pname||"このメモ"} を削除します。よろしいですか？`)) return;
+    pokeDB = pokeDB.filter(x=>x.id!==pokeEditing);
+    save(K.pokemon, pokeDB);
+    setStatus("削除しました");
+    pokeClear();
+    renderAll();
+  }
+
+  function pokeSearchText(it){
+    return [
+      it.game,it.mode,it.pname,it.nature,it.ability,it.item,it.tera,it.team,
+      ...(it.tags||[]), ...(it.moves||[]), it.iv, it.notes
+    ].join(" ").toLowerCase();
+  }
+
+  function renderPokemon(){
+    const q = (search.value||"").trim().toLowerCase();
+    const gf = pokeFilterGame.value;
+    const tf = (pokeFilterTeam.value || "");
+    const sort = pokeSort.value;
+
+    // チーム候補（DBから自動生成）
+    const teams = Array.from(new Set(pokeDB.map(x => (x.team || "").trim()).filter(Boolean)))
+      .sort((a,b)=>a.localeCompare(b,"ja"));
+
+    // プルダウン候補（保持しつつ更新）
+    const currentTeamSelect = pokeFilterTeam.value || "";
+    pokeFilterTeam.innerHTML =
+      `<option value="">チーム：すべて</option>` +
+      teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
+    pokeFilterTeam.value = currentTeamSelect;
+
+    // タブ描画
+    if (teamTabs) {
+      const tabs = [
+        { key:"", label:"すべて" },
+        { key:"__UNSET__", label:"未設定" },
+        ...teams.map(t => ({ key:t, label:t }))
+      ];
+      teamTabs.innerHTML = tabs.map(t => {
+        const on = (t.key === activeTeamTab) ? "teamtab active" : "teamtab";
+        return `<button type="button" class="${on}" data-team="${esc(t.key)}">${esc(t.label)}</button>`;
+      }).join("");
+    }
+
+    let items = pokeDB.slice();
+    if(gf) items = items.filter(x=>x.game===gf);
+
+    // タブ優先フィルタ
+    if (activeTeamTab === "__UNSET__") {
+      items = items.filter(x => !(x.team || "").trim());
+    } else if (activeTeamTab) {
+      items = items.filter(x => (x.team || "") === activeTeamTab);
+    } else if (tf) {
+      // タブが「すべて」のときだけプルダウンを適用
+      items = items.filter(x => (x.team || "") === tf);
+    }
+
+    if(q) items = items.filter(x=>pokeSearchText(x).includes(q));
+
+    if(sort==="updated_desc") items.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
+    if(sort==="name_asc") items.sort((a,b)=>(a.pname||"").localeCompare(b.pname||"", "ja"));
+
+    $("count").textContent = String(items.length);
+    pokeList.innerHTML = "";
+    pokeEmpty.style.display = items.length ? "none":"block";
+
+    for(const it of items){
+      const ev = it.ev || {H:0,A:0,B:0,C:0,D:0,S:0};
+      const evT = Object.values(ev).reduce((s,n)=>s+(Number(n)||0),0);
+      const tagHtml = (it.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
+      const moves = (it.moves && it.moves.length) ? it.moves.join(" / ") : "—";
+      const teamLine = it.team ? ` ・ チーム:${esc(it.team)}` : " ・ チーム:未設定";
+      const node = document.createElement("div");
+      node.className = "item";
+      node.innerHTML = `
+        <div class="item-head">
+          <div style="min-width:0;">
+            <div class="title">${esc(it.pname||"（無名）")}</div>
+            <div class="sub">${esc(it.game
