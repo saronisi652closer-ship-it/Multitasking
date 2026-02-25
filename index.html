@@ -53,6 +53,36 @@
     .hide{display:none}
     .pill{display:inline-flex;gap:6px;align-items:center;padding:5px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
     .pill strong{color:var(--text);font-weight:700}
+    /* ===== Android縦スクロール最適化 ===== */
+
+/* まず横はみ出しを封じる */
+html, body { max-width: 100%; overflow-x: hidden; }
+
+/* 入力系は幅100%に寄せる */
+input, textarea, select, button { width: 100%; }
+
+/* row内のボタンやセレクトは必要なときだけ幅を縮める */
+.row > button, .row > select { width: auto; }
+
+/* 小さい画面は「2列/3列」を1列に落とす */
+@media (max-width: 720px) {
+  .two { grid-template-columns: 1fr; }
+  .three { grid-template-columns: 1fr; }
+}
+
+/* EVの6列はスマホでは3列×2段にする（横はみ出し対策の本命） */
+@media (max-width: 720px) {
+  .six { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 420px) {
+  .six { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ヘッダー右側（検索＋件数）を縦に落として横詰まり回避 */
+@media (max-width: 720px) {
+  header .row { align-items: stretch; }
+  #search { min-width: 0 !important; width: 100% !important; }
+}
   </style>
 </head>
 
@@ -1053,4 +1083,5 @@ btnIVClear.onclick = () => { iv.value=""; setStatus("IVをクリアしました"
 </script>
 </body>
           </html>
+
 
