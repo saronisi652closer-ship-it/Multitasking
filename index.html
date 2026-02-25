@@ -879,11 +879,23 @@ const btnApplyPreset = $("btnApplyPreset");
   btnSavePokemon.onclick = pokeUpsert;
   btnClearPokemon.onclick = () => { pokeClear(); setStatus("入力をクリアしました"); };
   btnDeletePokemon.onclick = pokeRemove;
-  btnEV252.onclick = () => {
-    // よくあるテンプレ：H4 A252 S252（例としてA/S）
-    evH.value="4"; evA.value="252"; evB.value="0"; evC.value="0"; evD.value="0"; evS.value="252";
-    calcEV(); setStatus("テンプレを入れました（H4 A252 S252）");
-  };
+  btnApplyPreset.onclick = () => {
+  const v = (evPreset.value || "").trim();
+  if (!v) return setStatus("テンプレを選んでください");
+  const map = { H:0,A:0,B:0,C:0,D:0,S:0 };
+  v.split(",").forEach(part => {
+    const [k,val] = part.split(":");
+    if (k && val) map[k.trim()] = parseInt(val,10);
+  });
+  evH.value = String(map.H||0);
+  evA.value = String(map.A||0);
+  evB.value = String(map.B||0);
+  evC.value = String(map.C||0);
+  evD.value = String(map.D||0);
+  evS.value = String(map.S||0);
+  calcEV();
+  setStatus("テンプレを適用しました");
+};
   pokeFilterGame.onchange = renderAll;
   pokeSort.onchange = renderAll;
 
@@ -970,6 +982,7 @@ const btnApplyPreset = $("btnApplyPreset");
 </body>
 
 </html>
+
 
 
 
