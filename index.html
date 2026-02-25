@@ -109,6 +109,22 @@ body { overflow-x: hidden; }
 select, button { max-width: 100%; }
     /* flex内の要素が縮まないのが原因の時の保険 */
 .row > * { min-width: 0; }
+    /* === スマホでは横並びを縦に落として、はみ出しを根絶 === */
+@media (max-width: 520px) {
+  /* EVテンプレ：セレクトとボタンを縦積み */
+  #evPreset { width: 100% !important; }
+  #btnApplyPreset { width: 100% !important; }
+  #btnApplyPreset { margin-left: 0 !important; }
+
+  /* 一覧アイテムの右側ボタン（編集/削除）を折り返し */
+  .item-head { flex-wrap: wrap; }
+  .item-head > div:first-child { min-width: 0; flex: 1 1 100%; }
+  .item-head > .row { width: 100%; justify-content: flex-end; }
+  .item-head > .row button { flex: 1 1 auto; } /* ボタンを並べてもはみ出しにくい */
+}
+
+/* 念のため：横ズレ防止 */
+html, body { overflow-x: hidden; }
   </style>
 </head>
 
@@ -1146,5 +1162,6 @@ select, button { max-width: 100%; }
 </script>
 </body>
 </html>
+
 
 
