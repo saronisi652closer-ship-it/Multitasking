@@ -141,19 +141,20 @@
           </div>
         </div>
 
+        <!-- ここが Ver1.1：チーム追加（三列） -->
         <div class="three" style="margin-top:10px;">
-  <div>
-    <div class="label">テラスタイプ / タイプ（自由入力）</div>
-    <input id="tera" placeholder="例：はがね / ひこう" />
-  </div>
-  <div>
-    <div class="label">パーティ名（チーム）</div>
-    <input id="pokeTeam" placeholder="例：SVランクマS1 / 旅パ / 周回" />
-  </div>
-  <div>
-    <div class="label">タグ（カンマ区切り）</div>
-    <input id="pokeTags" placeholder="例：積み, 受け崩し, 初手" />
-  </div>
+          <div>
+            <div class="label">テラスタイプ / タイプ（自由入力）</div>
+            <input id="tera" placeholder="例：はがね / ひこう" />
+          </div>
+          <div>
+            <div class="label">パーティ名（チーム）</div>
+            <input id="pokeTeam" placeholder="例：SVランクマS1 / 旅パ / 周回" />
+          </div>
+          <div>
+            <div class="label">タグ（カンマ区切り）</div>
+            <input id="pokeTags" placeholder="例：積み, 受け崩し, 初手" />
+          </div>
         </div>
 
         <div style="margin-top:10px;">
@@ -178,18 +179,24 @@
             <div><div class="label">D</div><input id="evD" inputmode="numeric" placeholder="0"></div>
             <div><div class="label">S</div><input id="evS" inputmode="numeric" placeholder="0"></div>
           </div>
+
           <div class="row" style="margin-top:10px;justify-content:space-between;">
             <span class="small">EV合計: <span id="evTotal" class="mono">0</span>（目安: 510）</span>
-            <select id="evPreset">
-  <option value="">EVテンプレを選択</option>
-  <option value="H4,A252,S252">H4 A252 S252（アタッカー）</option>
-  <option value="H252,B252,D4">H252 B252 D4（物理受け）</option>
-  <option value="H252,D252,B4">H252 D252 B4（特殊受け）</option>
-  <option value="H252,A252,B4">H252 A252 B4（耐久アタッカー）</option>
-  <option value="H252,C252,S4">H252 C252 S4（特殊耐久寄り）</option>
-  <option value="H244,S252,B12">H244 S252 B12（例：最速＋耐久調整）</option>
-</select>
-<button class="ghost" id="btnApplyPreset">テンプレ適用</button>
+
+            <!-- ここが Ver1.1：テンプレ複数＋適用 -->
+            <div class="row">
+              <select id="evPreset">
+                <option value="">EVテンプレを選択</option>
+                <!-- valueは「H4,A252,S252」形式（コロン無しでもOK） -->
+                <option value="H4,A252,S252">H4 A252 S252（アタッカー）</option>
+                <option value="H252,B252,D4">H252 B252 D4（物理受け）</option>
+                <option value="H252,D252,B4">H252 D252 B4（特殊受け）</option>
+                <option value="H252,A252,B4">H252 A252 B4（耐久アタッカー）</option>
+                <option value="H252,C252,S4">H252 C252 S4（特殊耐久寄り）</option>
+                <option value="H244,S252,B12">H244 S252 B12（例：最速＋耐久調整）</option>
+              </select>
+              <button class="ghost" id="btnApplyPreset">テンプレ適用</button>
+            </div>
           </div>
         </div>
 
@@ -221,11 +228,13 @@
             <option value="BW/BW2">BW/BW2</option><option value="DPt">DPt</option><option value="HGSS">HGSS</option>
             <option value="その他">その他</option>
           </select>
+
           <select id="pokeSort">
             <option value="updated_desc">更新日（新しい順）</option>
             <option value="name_asc">名前（あいうえお順）</option>
           </select>
         </div>
+
         <div class="list" id="pokeList" style="margin-top:10px;"></div>
         <div id="pokeEmpty" class="small" style="margin-top:10px;">まだ登録がありません。</div>
       </section>
@@ -415,11 +424,13 @@
   const ability = $("ability");
   const item = $("item");
   const tera = $("tera");
+  const pokeTeam = $("pokeTeam");          // Ver1.1
   const pokeTags = $("pokeTags");
   const m1 = $("m1"), m2 = $("m2"), m3 = $("m3"), m4 = $("m4");
   const evH = $("evH"), evA = $("evA"), evB = $("evB"), evC = $("evC"), evD = $("evD"), evS = $("evS");
   const evTotal = $("evTotal");
-  const btnEV252 = $("btnEV252");
+  const evPreset = $("evPreset");          // Ver1.1
+  const btnApplyPreset = $("btnApplyPreset"); // Ver1.1
   const iv = $("iv");
   const notes = $("notes");
   const pokeEditorTitle = $("pokeEditorTitle");
@@ -444,7 +455,8 @@
     pokeEditing = null;
     pokeEditorTitle.textContent = "ポケモン：新規 / 編集";
     pokeGame.value = ""; pokeMode.value="";
-    pname.value=""; nature.value=""; ability.value=""; item.value=""; tera.value=""; pokeTags.value="";pokeTeam.value = "";
+    pname.value=""; nature.value=""; ability.value=""; item.value="";
+    tera.value=""; pokeTeam.value=""; pokeTags.value="";     // Ver1.1 team clear
     m1.value=""; m2.value=""; m3.value=""; m4.value="";
     evH.value=evA.value=evB.value=evC.value=evD.value=evS.value="0";
     iv.value=""; notes.value="";
@@ -462,11 +474,7 @@
     ability.value = it.ability || "";
     item.value = it.item || "";
     tera.value = it.tera || "";
-    pokeTeam.value = it.team || "";
-    const pokeTeam = $("pokeTeam");
-
-const evPreset = $("evPreset");
-const btnApplyPreset = $("btnApplyPreset");
+    pokeTeam.value = it.team || "";       // Ver1.1 team fill
     pokeTags.value = (it.tags||[]).join(", ");
     const mv = it.moves || ["","","",""];
     m1.value=mv[0]||""; m2.value=mv[1]||""; m3.value=mv[2]||""; m4.value=mv[3]||"";
@@ -490,8 +498,8 @@ const btnApplyPreset = $("btnApplyPreset");
       ability: ability.value.trim(),
       item: item.value.trim(),
       tera: tera.value.trim(),
-　　　team: pokeTeam.value.trim(),
-　　　tags: tags(pokeTags.value),
+      team: pokeTeam.value.trim(),        // Ver1.1
+      tags: tags(pokeTags.value),
       moves: [m1.value.trim(), m2.value.trim(), m3.value.trim(), m4.value.trim()].filter(Boolean),
       ev: { H: toInt(evH.value), A: toInt(evA.value), B: toInt(evB.value), C: toInt(evC.value), D: toInt(evD.value), S: toInt(evS.value) },
       iv: iv.value.trim(),
@@ -528,7 +536,7 @@ const btnApplyPreset = $("btnApplyPreset");
 
   function pokeSearchText(it){
     return [
-  it.game,it.mode,it.pname,it.nature,it.ability,it.item,it.tera,it.team,
+      it.game,it.mode,it.pname,it.nature,it.ability,it.item,it.tera,it.team,  // team追加
       ...(it.tags||[]), ...(it.moves||[]), it.iv, it.notes
     ].join(" ").toLowerCase();
   }
@@ -554,13 +562,14 @@ const btnApplyPreset = $("btnApplyPreset");
       const evT = Object.values(ev).reduce((s,n)=>s+(Number(n)||0),0);
       const tagHtml = (it.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
       const moves = (it.moves && it.moves.length) ? it.moves.join(" / ") : "—";
+      const teamLine = it.team ? ` ・ チーム:${esc(it.team)}` : "";
       const node = document.createElement("div");
       node.className = "item";
       node.innerHTML = `
         <div class="item-head">
           <div style="min-width:0;">
             <div class="title">${esc(it.pname||"（無名）")}</div>
-            <div class="sub">${esc(it.game||"未設定")} ・ ${esc(it.mode||"未設定")} ・ 性格:${esc(it.nature||"—")} ・ 特性:${esc(it.ability||"—")}</div>
+            <div class="sub">${esc(it.game||"未設定")} ・ ${esc(it.mode||"未設定")}${teamLine} ・ 性格:${esc(it.nature||"—")} ・ 特性:${esc(it.ability||"—")}</div>
           </div>
           <div class="row" style="flex-wrap:nowrap;">
             <button class="primary" data-act="poke-edit" data-id="${it.id}">編集</button>
@@ -619,14 +628,12 @@ const btnApplyPreset = $("btnApplyPreset");
     const lines = (text||"").split("\n").map(x=>x.trim()).filter(Boolean);
     const out = [];
     for(const line of lines){
-      // patterns: "name x2" / "name 2" / "name×2"
       const m = line.match(/^(.*?)(?:\s*[x×]\s*|\s+)(\d+)\s*$/i);
       if(m){
         const name = m[1].trim();
         const cnt = toInt(m[2]);
         if(name) out.push({name, cnt: Math.max(0,cnt)});
       } else {
-        // no count -> assume 1
         out.push({name: line, cnt: 1});
       }
     }
@@ -753,7 +760,7 @@ const btnApplyPreset = $("btnApplyPreset");
     const d = ygoDecks.find(x=>x.id===deckId);
     if(!d) return { deck:null, missing:[] };
 
-    const req = new Map(); // name -> needed count
+    const req = new Map();
     const add = (arr) => {
       for(const it of arr){
         const n = normName(it.name);
@@ -879,43 +886,46 @@ const btnApplyPreset = $("btnApplyPreset");
   btnSavePokemon.onclick = pokeUpsert;
   btnClearPokemon.onclick = () => { pokeClear(); setStatus("入力をクリアしました"); };
   btnDeletePokemon.onclick = pokeRemove;
-  btnApplyPreset.onclick = () => {
-  const v = (evPreset.value || "").trim();
-  if (!v) return setStatus("テンプレを選んでください");
 
-  const map = { H:0, A:0, B:0, C:0, D:0, S:0 };
-
-  v.split(",").forEach(part => {
-    const p = part.trim();
-    if (!p) return;
-
-    // 形式1: H:252
-    if (p.includes(":")) {
-      const [k, val] = p.split(":");
-      const key = (k || "").trim().toUpperCase();
-      const num = parseInt((val || "").trim(), 10);
-      if (key && Number.isFinite(num)) map[key] = num;
-      return;
-    }
-
-    // 形式2: H252（コロン無し）
-    const key = p.slice(0,1).toUpperCase();
-    const num = parseInt(p.slice(1), 10);
-    if ("HABCDS".includes(key) && Number.isFinite(num)) map[key] = num;
-  });
-
-  evH.value = String(map.H||0);
-  evA.value = String(map.A||0);
-  evB.value = String(map.B||0);
-  evC.value = String(map.C||0);
-  evD.value = String(map.D||0);
-  evS.value = String(map.S||0);
-
-  calcEV();
-  setStatus("テンプレを適用しました");
-};
   pokeFilterGame.onchange = renderAll;
   pokeSort.onchange = renderAll;
+
+  // ✅ EVテンプレ適用（コロンあり/なし両対応）
+  btnApplyPreset.onclick = () => {
+    const v = (evPreset.value || "").trim();
+    if (!v) return setStatus("テンプレを選んでください");
+
+    const map = { H:0, A:0, B:0, C:0, D:0, S:0 };
+
+    v.split(",").forEach(part => {
+      const p = part.trim();
+      if (!p) return;
+
+      // 形式1: H:252
+      if (p.includes(":")) {
+        const [k, val] = p.split(":");
+        const key = (k || "").trim().toUpperCase();
+        const num = parseInt((val || "").trim(), 10);
+        if ("HABCDS".includes(key) && Number.isFinite(num)) map[key] = num;
+        return;
+      }
+
+      // 形式2: H252（コロン無し）
+      const key = p.slice(0,1).toUpperCase();
+      const num = parseInt(p.slice(1), 10);
+      if ("HABCDS".includes(key) && Number.isFinite(num)) map[key] = num;
+    });
+
+    evH.value = String(map.H||0);
+    evA.value = String(map.A||0);
+    evB.value = String(map.B||0);
+    evC.value = String(map.C||0);
+    evD.value = String(map.D||0);
+    evS.value = String(map.S||0);
+
+    calcEV();
+    setStatus("テンプレを適用しました");
+  };
 
   pokeList.addEventListener("click", (e)=>{
     const t = e.target;
@@ -998,10 +1008,4 @@ const btnApplyPreset = $("btnApplyPreset");
 })();
 </script>
 </body>
-
-</html>
-
-
-
-
-
+          </html>
