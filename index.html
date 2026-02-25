@@ -489,7 +489,8 @@ const btnApplyPreset = $("btnApplyPreset");
       ability: ability.value.trim(),
       item: item.value.trim(),
       tera: tera.value.trim(),
-      tags: tags(pokeTags.value),
+team: pokeTeam.value.trim(),
+tags: tags(pokeTags.value),
       moves: [m1.value.trim(), m2.value.trim(), m3.value.trim(), m4.value.trim()].filter(Boolean),
       ev: { H: toInt(evH.value), A: toInt(evA.value), B: toInt(evB.value), C: toInt(evC.value), D: toInt(evD.value), S: toInt(evS.value) },
       iv: iv.value.trim(),
@@ -968,4 +969,5 @@ const btnApplyPreset = $("btnApplyPreset");
 </body>
 
 </html>
+
 
