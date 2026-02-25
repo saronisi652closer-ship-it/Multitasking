@@ -1,1145 +1,225 @@
 <!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>趣味管理アプリ（ポケモン / 遊戯王）</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>趣味管理アプリ</title>
 
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#0b0c10">
-  <link rel="icon" href="icon-192.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0b0c10">
 
-  <style>
-    :root { --bg:#0b0c10; --card:#14161d; --muted:#aeb5c3; --text:#eef2ff; --accent:#6ee7b7; --danger:#fb7185; --line:#24283a; }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans JP",sans-serif;background:var(--bg);color:var(--text)}
-    header{position:sticky;top:0;z-index:10;background:rgba(11,12,16,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-    .wrap{max-width:1100px;margin:0 auto;padding:12px 14px}
-    h1{font-size:16px;margin:0 0 10px}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    input,textarea,select,button{
-      font:inherit;color:var(--text);background:#0f1117;border:1px solid var(--line);
-      border-radius:12px;padding:10px 12px
-    }
-    textarea{min-height:90px;resize:vertical}
-    button{cursor:pointer;background:#121626}
-    button.primary{border-color:rgba(110,231,183,.35);background:rgba(110,231,183,.12)}
-    button.primary:hover{background:rgba(110,231,183,.18)}
-    button.danger{border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.12)}
-    button.danger:hover{background:rgba(251,113,133,.18)}
-    button.ghost:hover{background:#151a2c}
-    .tabs{display:flex;gap:8px;flex-wrap:wrap}
-    .tab{padding:8px 12px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
-    .tab.active{border-color:rgba(110,231,183,.45);color:var(--text);background:rgba(110,231,183,.10)}
-    main{padding:14px}
-    .grid{display:grid;grid-template-columns:1fr;gap:14px}
-    @media(min-width:980px){.grid{grid-template-columns:420px 1fr}}
-    .card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px}
-    .card h2{margin:0 0 10px;font-size:14px;color:var(--muted);font-weight:600}
-    .label{font-size:12px;color:var(--muted);margin:0 0 6px 2px}
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-    .three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-    .six{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}
-    .list{display:flex;flex-direction:column;gap:10px}
-    .item{border:1px solid var(--line);border-radius:16px;padding:12px;background:#10131b}
-    .item-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
-    .title{font-weight:800;font-size:16px;line-height:1.2}
-    .sub{color:var(--muted);font-size:12px;margin-top:4px}
-    .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
-    .tag{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Noto Sans Mono",monospace}
-    .mutedline{border-top:1px dashed #2a2f44;margin:12px 0}
-    .small{font-size:12px;color:var(--muted)}
-    .hide{display:none}
-    .pill{display:inline-flex;gap:6px;align-items:center;padding:5px 10px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px}
-    .pill strong{color:var(--text);font-weight:700}
-    /* ===== Android縦スクロール最適化 ===== */
+<style>
+:root{
+--bg:#0b0c10;
+--card:#14161d;
+--muted:#aeb5c3;
+--text:#eef2ff;
+--accent:#6ee7b7;
+--line:#24283a;
+}
+*{box-sizing:border-box}
+body{
+margin:0;
+font-family:system-ui,-apple-system,"Noto Sans JP",sans-serif;
+background:var(--bg);
+color:var(--text);
+overflow-x:hidden;
+}
+.wrap{max-width:100%;padding:12px}
+.card{
+background:var(--card);
+border:1px solid var(--line);
+border-radius:18px;
+padding:14px;
+margin-bottom:16px;
+}
+input,textarea,select,button{
+font:inherit;
+color:var(--text);
+background:#0f1117;
+border:1px solid var(--line);
+border-radius:12px;
+padding:10px;
+width:100%;
+}
+textarea{min-height:80px}
+button.primary{background:rgba(110,231,183,.15)}
+button.danger{background:rgba(255,80,100,.15)}
 
-/* まず横はみ出しを封じる */
-html, body { max-width: 100%; overflow-x: hidden; }
+.row{display:flex;gap:8px;flex-wrap:wrap}
+.two{display:grid;grid-template-columns:1fr;gap:8px}
+.three{display:grid;grid-template-columns:1fr;gap:8px}
+.six{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
 
-/* 入力系は幅100%に寄せる */
-input, textarea, select, button { width: 100%; }
-
-/* row内のボタンやセレクトは必要なときだけ幅を縮める */
-.row > button, .row > select { width: auto; }
-
-/* 小さい画面は「2列/3列」を1列に落とす */
-@media (max-width: 720px) {
-  .two { grid-template-columns: 1fr; }
-  .three { grid-template-columns: 1fr; }
+@media(max-width:420px){
+.six{grid-template-columns:repeat(2,1fr)}
 }
 
-/* EVの6列はスマホでは3列×2段にする（横はみ出し対策の本命） */
-@media (max-width: 720px) {
-  .six { grid-template-columns: repeat(3, 1fr); }
-}
-@media (max-width: 420px) {
-  .six { grid-template-columns: repeat(2, 1fr); }
-}
-
-/* ヘッダー右側（検索＋件数）を縦に落として横詰まり回避 */
-@media (max-width: 720px) {
-  header .row { align-items: stretch; }
-  #search { min-width: 0 !important; width: 100% !important; }
-}
-    /* チームタブ */
 .teamtab{
-  white-space:nowrap;
-  padding:8px 12px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  color:var(--muted);
-  background:#0f1117;
+padding:6px 12px;
+border-radius:999px;
+border:1px solid var(--line);
+background:#0f1117;
+color:var(--muted);
+white-space:nowrap;
 }
 .teamtab.active{
-  border-color:rgba(110,231,183,.45);
-  color:var(--text);
-  background:rgba(110,231,183,.10);
+background:rgba(110,231,183,.15);
+color:var(--text);
 }
-  </style>
+
+</style>
 </head>
 
 <body>
-<header>
-  <div class="wrap">
-    <h1>趣味管理アプリ（PWA）</h1>
-    <div class="row" style="justify-content:space-between">
-      <div class="tabs">
-        <button class="tab active" id="tabPokemon">ポケモン</button>
-        <button class="tab" id="tabYgo">遊戯王</button>
-      </div>
-      <div class="row">
-        <input id="search" type="search" placeholder="検索（共通）" style="min-width:220px;flex:1">
-        <span class="pill">件数: <strong id="count">0</strong></span>
-      </div>
-    </div>
+<div class="wrap">
 
-    <div class="row" style="margin-top:10px;">
-      <button class="primary" id="btnNew">＋ 新規</button>
-      <button class="ghost" id="btnExport">エクスポート</button>
-      <button class="ghost" id="btnImport">インポート</button>
-      <button class="danger" id="btnWipe">全削除</button>
-      <span class="small" id="status"></span>
-    </div>
-  </div>
-</header>
+<div class="card">
+<h3>ポケモン登録</h3>
 
-<main class="wrap">
-  <!-- Pokemon -->
-  <section id="viewPokemon">
-    <div class="grid">
-      <section class="card">
-        <h2 id="pokeEditorTitle">ポケモン：新規 / 編集</h2>
+<input id="pname" placeholder="ポケモン名">
+<input id="pokeTeam" placeholder="チーム名">
 
-        <div class="two">
-          <div>
-            <div class="label">作品</div>
-            <select id="pokeGame">
-              <option value="">未設定</option>
-              <option value="SV">SV</option>
-              <option value="剣盾">剣盾</option>
-              <option value="BDSP">BDSP</option>
-              <option value="PLA">PLA</option>
-              <option value="SM/USUM">SM/USUM</option>
-              <option value="XY/ORAS">XY/ORAS</option>
-              <option value="BW/BW2">BW/BW2</option>
-              <option value="DPt">DPt</option>
-              <option value="HGSS">HGSS</option>
-              <option value="その他">その他</option>
-            </select>
-          </div>
-          <div>
-            <div class="label">用途</div>
-            <select id="pokeMode">
-              <option value="">未設定</option>
-              <option value="シングル">シングル</option>
-              <option value="ダブル">ダブル</option>
-              <option value="ランクマ">ランクマ</option>
-              <option value="フレ戦">フレ戦</option>
-              <option value="周回">周回</option>
-              <option value="育成中">育成中</option>
-            </select>
-          </div>
-        </div>
+<div class="six">
+<div><input id="evH" placeholder="H"></div>
+<div><input id="evA" placeholder="A"></div>
+<div><input id="evB" placeholder="B"></div>
+<div><input id="evC" placeholder="C"></div>
+<div><input id="evD" placeholder="D"></div>
+<div><input id="evS" placeholder="S"></div>
+</div>
 
-        <div class="two" style="margin-top:10px;">
-          <div>
-            <div class="label">ポケモン名</div>
-            <input id="pname" placeholder="例：カイリュー" />
-          </div>
-          <div>
-            <div class="label">性格</div>
-            <input id="nature" placeholder="例：いじっぱり" />
-          </div>
-        </div>
+<div class="row">
+<select id="evPreset">
+<option value="">EVテンプレを選択</option>
+<option value="H4,A252,S252">H4 A252 S252</option>
+<option value="H252,B252,D4">H252 B252 D4</option>
+</select>
+<button id="btnApplyPreset">テンプレ適用</button>
+</div>
 
-        <div class="two" style="margin-top:10px;">
-          <div>
-            <div class="label">特性</div>
-            <input id="ability" placeholder="例：マルチスケイル" />
-          </div>
-          <div>
-            <div class="label">持ち物</div>
-            <input id="item" placeholder="例：たべのこし" />
-          </div>
-        </div>
+<input id="iv" placeholder="例：H31 A31 B31 C31 D31 S31">
 
-        <!-- ここが Ver1.1：チーム追加（三列） -->
-        <div class="three" style="margin-top:10px;">
-          <div>
-            <div class="label">テラスタイプ / タイプ（自由入力）</div>
-            <input id="tera" placeholder="例：はがね / ひこう" />
-          </div>
-          <div>
-            <div class="label">パーティ名（チーム）</div>
-            <input id="pokeTeam" placeholder="例：SVランクマS1 / 旅パ / 周回" />
-          </div>
-          <div>
-            <div class="label">タグ（カンマ区切り）</div>
-            <input id="pokeTags" placeholder="例：積み, 受け崩し, 初手" />
-          </div>
-        </div>
+<div class="row">
+<button id="btnIVAll31">全V(31)</button>
+<button id="btnIVS0">S0</button>
+<button id="btnIVA0">A0</button>
+<button id="btnIVC0">C0</button>
+<button id="btnIVClear">IVクリア</button>
+</div>
 
-        <div style="margin-top:10px;">
-          <div class="label">技（4つ）</div>
-          <div class="two">
-            <input id="m1" placeholder="技1" />
-            <input id="m2" placeholder="技2" />
-          </div>
-          <div class="two" style="margin-top:10px;">
-            <input id="m3" placeholder="技3" />
-            <input id="m4" placeholder="技4" />
-          </div>
-        </div>
+<button class="primary" id="btnSave">保存</button>
+</div>
 
-        <div style="margin-top:10px;">
-          <div class="label">努力値（EV）</div>
-          <div class="six">
-            <div><div class="label">H</div><input id="evH" inputmode="numeric" placeholder="0"></div>
-            <div><div class="label">A</div><input id="evA" inputmode="numeric" placeholder="0"></div>
-            <div><div class="label">B</div><input id="evB" inputmode="numeric" placeholder="0"></div>
-            <div><div class="label">C</div><input id="evC" inputmode="numeric" placeholder="0"></div>
-            <div><div class="label">D</div><input id="evD" inputmode="numeric" placeholder="0"></div>
-            <div><div class="label">S</div><input id="evS" inputmode="numeric" placeholder="0"></div>
-          </div>
+<div class="card">
+<h3>ポケモン一覧</h3>
 
-          <div class="row" style="margin-top:10px;justify-content:space-between;">
-            <span class="small">EV合計: <span id="evTotal" class="mono">0</span>（目安: 510）</span>
+<div id="teamTabs" class="row"></div>
 
-            <!-- ここが Ver1.1：テンプレ複数＋適用 -->
-            <div class="row">
-              <select id="evPreset">
-                <option value="">EVテンプレを選択</option>
-                <!-- valueは「H4,A252,S252」形式（コロン無しでもOK） -->
-                <option value="H4,A252,S252">H4 A252 S252（アタッカー）</option>
-                <option value="H252,B252,D4">H252 B252 D4（物理受け）</option>
-                <option value="H252,D252,B4">H252 D252 B4（特殊受け）</option>
-                <option value="H252,A252,B4">H252 A252 B4（耐久アタッカー）</option>
-                <option value="H252,C252,S4">H252 C252 S4（特殊耐久寄り）</option>
-                <option value="H244,S252,B12">H244 S252 B12（例：最速＋耐久調整）</option>
-              </select>
-              <button class="ghost" id="btnApplyPreset">テンプレ適用</button>
-            </div>
-          </div>
-        </div>
+<select id="pokeFilterTeam">
+<option value="">チーム：すべて</option>
+</select>
 
-        <div style="margin-top:10px;">
-          <div class="label">個体値（IV・任意）</div>
-          <input id="iv" placeholder="例：H31 A31 B31 C× D31 S31 / S0 など" />
-        </div>
+<div id="pokeList"></div>
+</div>
 
-        <div style="margin-top:10px;">
-          <div class="label">メモ（調整意図・役割・ダメ計など）</div>
-          <textarea id="notes" placeholder="例：S 最速100族抜き / ステロ苦手 など"></textarea>
-        </div>
-        <div class="row" style="margin-top:8px;">
-  <button class="ghost" type="button" id="btnIVAll31">全V(31) ひな形</button>
-  <button class="ghost" type="button" id="btnIVS0">S0</button>
-  <button class="ghost" type="button" id="btnIVA0">A0</button>
-  <button class="ghost" type="button" id="btnIVC0">C0</button>
-  <button class="ghost" type="button" id="btnIVClear">IVクリア</button>
-        </div>
-
-        
-        <div class="mutedline"></div>
-        <div class="row">
-          <button class="primary" id="btnSavePokemon">保存</button>
-          <button class="ghost" id="btnClearPokemon">入力クリア</button>
-          <button class="danger hide" id="btnDeletePokemon">削除</button>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>ポケモン：一覧</h2>
-        <div id="teamTabs" class="row" style="overflow-x:auto; flex-wrap:nowrap; gap:8px; padding-bottom:6px;"></div>
-        <div class="row">
-          <select id="pokeFilterGame">
-            <option value="">作品：すべて</option>
-            <option value="SV">SV</option><option value="剣盾">剣盾</option><option value="BDSP">BDSP</option>
-            <option value="PLA">PLA</option><option value="SM/USUM">SM/USUM</option><option value="XY/ORAS">XY/ORAS</option>
-            <option value="BW/BW2">BW/BW2</option><option value="DPt">DPt</option><option value="HGSS">HGSS</option>
-            <option value="その他">その他</option>
-          </select>
-　　　　　　<select id="pokeFilterTeam">
-　　　　　　  <option value="">チーム：すべて</option>
-　　　　　　</select>
-          <select id="pokeSort">
-            <option value="updated_desc">更新日（新しい順）</option>
-            <option value="name_asc">名前（あいうえお順）</option>
-          </select>
-        </div>
-
-        <div class="list" id="pokeList" style="margin-top:10px;"></div>
-        <div id="pokeEmpty" class="small" style="margin-top:10px;">まだ登録がありません。</div>
-      </section>
-    </div>
-  </section>
-
-  <!-- Yu-Gi-Oh -->
-  <section id="viewYgo" class="hide">
-    <div class="grid">
-      <section class="card">
-        <h2 id="ygoEditorTitle">遊戯王：デッキ 新規 / 編集</h2>
-
-        <div class="two">
-          <div>
-            <div class="label">分類（任意）</div>
-            <select id="ygoGame">
-              <option value="">未設定</option>
-              <option value="OCG">OCG</option>
-              <option value="MD">MD</option>
-              <option value="LOTD">LOTD</option>
-              <option value="その他">その他</option>
-            </select>
-          </div>
-          <div>
-            <div class="label">デッキ名</div>
-            <input id="deckName" placeholder="例：獄神 後攻OTK" />
-          </div>
-        </div>
-
-        <div style="margin-top:10px;">
-          <div class="label">メイン（1行に1枚：例「灰流うらら x2」 or 「灰流うらら 2」）</div>
-          <textarea id="deckMain" placeholder="カード名 x枚数 を行ごとに"></textarea>
-        </div>
-        <div style="margin-top:10px;">
-          <div class="label">エクストラ（同じ形式）</div>
-          <textarea id="deckExtra"></textarea>
-        </div>
-        <div style="margin-top:10px;">
-          <div class="label">サイド（同じ形式）</div>
-          <textarea id="deckSide"></textarea>
-        </div>
-
-        <div style="margin-top:10px;">
-          <div class="label">タグ（カンマ区切り）</div>
-          <input id="ygoTags" placeholder="例：後攻, OTK, カジュアル" />
-        </div>
-        <div style="margin-top:10px;">
-          <div class="label">メモ</div>
-          <textarea id="ygoNotes"></textarea>
-        </div>
-
-        <div class="mutedline"></div>
-        <div class="row">
-          <button class="primary" id="btnSaveDeck">保存</button>
-          <button class="ghost" id="btnClearDeck">入力クリア</button>
-          <button class="danger hide" id="btnDeleteDeck">削除</button>
-        </div>
-      </section>
-
-      <section class="card">
-        <h2>遊戯王：所持カード（手入力）</h2>
-        <div class="two">
-          <div>
-            <div class="label">カード名</div>
-            <input id="ownName" placeholder="例：灰流うらら" />
-          </div>
-          <div>
-            <div class="label">所持枚数（0〜3）</div>
-            <input id="ownCount" inputmode="numeric" placeholder="0" />
-          </div>
-        </div>
-        <div class="row" style="margin-top:10px;">
-          <button class="primary" id="btnAddOwn">追加/更新</button>
-          <button class="ghost" id="btnClearOwn">クリア</button>
-        </div>
-
-        <div class="mutedline"></div>
-        <h2>遊戯王：一覧 / 不足カード</h2>
-        <div class="row">
-          <select id="ygoSort">
-            <option value="updated_desc">更新日（新しい順）</option>
-            <option value="name_asc">デッキ名（あいうえお順）</option>
-          </select>
-          <button class="ghost" id="btnShowMissing">選択デッキの不足を見る</button>
-        </div>
-
-        <div class="list" id="deckList" style="margin-top:10px;"></div>
-        <div id="deckEmpty" class="small" style="margin-top:10px;">まだデッキがありません。</div>
-
-        <div class="mutedline"></div>
-        <div id="missingBox" class="hide">
-          <div class="title" id="missingTitle" style="font-size:14px;">不足カード</div>
-          <div class="small">所持カードと照合して、不足分だけ表示します。</div>
-          <div class="list" id="missingList" style="margin-top:10px;"></div>
-          <button class="ghost" id="btnCloseMissing" style="margin-top:10px;">閉じる</button>
-        </div>
-
-        <div class="mutedline"></div>
-        <div class="small">
-          <strong>所持カード一覧（名前→枚数）</strong>
-          <div id="ownList" class="mono" style="margin-top:8px;white-space:pre-wrap;"></div>
-        </div>
-      </section>
-    </div>
-  </section>
-</main>
-
-<input class="hide" id="fileInput" type="file" accept="application/json" />
+</div>
 
 <script>
-(() => {
-  // ---- PWA register
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => navigator.serviceWorker.register("./sw.js").catch(()=>{}));
-  }
+const $=id=>document.getElementById(id)
+let pokeDB=JSON.parse(localStorage.getItem("pokeDB")||"[]")
+let activeTeamTab=""
 
-  // ---- Storage keys
-  const K = {
-    pokemon: "app_v1_pokemon",
-    ygoDecks: "app_v1_ygo_decks",
-    ygoOwn: "app_v1_ygo_own"
-  };
+const evPreset=$("evPreset")
+const btnApplyPreset=$("btnApplyPreset")
+const iv=$("iv")
 
-  // ---- helpers
-  const $ = (id) => document.getElementById(id);
-  const nowISO = () => new Date().toISOString();
-  const uid = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36).slice(-4);
-  const toInt = (v) => {
-    const n = parseInt(String(v||"").replace(/[^\d-]/g,""), 10);
-    return Number.isFinite(n) ? n : 0;
-  };
-  const esc = (s) => String(s ?? "")
-    .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;").replaceAll("'","&#039;");
-  const tags = (s) => (s||"").split(",").map(x=>x.trim()).filter(Boolean).slice(0,40);
-
-  const load = (key, fallback) => {
-    try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) : fallback; }
-    catch { return fallback; }
-  };
-  const save = (key, val) => localStorage.setItem(key, JSON.stringify(val));
-
-  const status = $("status");
-  const setStatus = (msg) => { status.textContent = msg; if (msg) setTimeout(()=>status.textContent="", 2500); };
-
-  // ---- tabs
-  const tabPokemon = $("tabPokemon");
-  const tabYgo = $("tabYgo");
-  const viewPokemon = $("viewPokemon");
-  const viewYgo = $("viewYgo");
-
-  let activeTab = "pokemon"; // pokemon | ygo
-  function setTab(t){
-    activeTab = t;
-    if (t === "pokemon") {
-      tabPokemon.classList.add("active"); tabYgo.classList.remove("active");
-      viewPokemon.classList.remove("hide"); viewYgo.classList.add("hide");
-    } else {
-      tabYgo.classList.add("active"); tabPokemon.classList.remove("active");
-      viewYgo.classList.remove("hide"); viewPokemon.classList.add("hide");
-    }
-    renderAll();
-  }
-  tabPokemon.onclick = () => setTab("pokemon");
-  tabYgo.onclick = () => setTab("ygo");
-
-  // ---- common search
-  const search = $("search");
-
-  // ---- global buttons
-  const btnNew = $("btnNew");
-  const btnExport = $("btnExport");
-  const btnImport = $("btnImport");
-  const btnWipe = $("btnWipe");
-  const fileInput = $("fileInput");
-
-  // =========================
-  // Pokemon module
-  // =========================
-  let pokeDB = load(K.pokemon, []);
-  let pokeEditing = null;
-
-  const pokeGame = $("pokeGame");
-  const pokeMode = $("pokeMode");
-  const pname = $("pname");
-  const nature = $("nature");
-  const ability = $("ability");
-  const item = $("item");
-  const tera = $("tera");
-  const pokeTeam = $("pokeTeam");          // Ver1.1
-  const pokeTags = $("pokeTags");
-  const m1 = $("m1"), m2 = $("m2"), m3 = $("m3"), m4 = $("m4");
-  const evH = $("evH"), evA = $("evA"), evB = $("evB"), evC = $("evC"), evD = $("evD"), evS = $("evS");
-  const evTotal = $("evTotal");
-  const evPreset = $("evPreset");          // Ver1.1
-  const btnApplyPreset = $("btnApplyPreset"); // Ver1.1
-  const iv = $("iv");
-  const btnIVAll31 = $("btnIVAll31");
-const btnIVS0 = $("btnIVS0");
-const btnIVA0 = $("btnIVA0");
-const btnIVC0 = $("btnIVC0");
-const btnIVClear = $("btnIVClear");
-  const notes = $("notes");
-  const pokeEditorTitle = $("pokeEditorTitle");
-  const btnSavePokemon = $("btnSavePokemon");
-  const btnClearPokemon = $("btnClearPokemon");
-  const btnDeletePokemon = $("btnDeletePokemon");
-  const pokeList = $("pokeList");
-  const pokeEmpty = $("pokeEmpty");
-  const pokeFilterGame = $("pokeFilterGame");
-  const pokeSort = $("pokeSort");
-　const pokeFilterTeam = $("pokeFilterTeam");
-  const teamTabs = $("teamTabs");
-let activeTeamTab = ""; // ""=すべて, "__UNSET__"=未設定, それ以外=チーム名
-  
-  function calcEV(){
-    const t = toInt(evH.value)+toInt(evA.value)+toInt(evB.value)+toInt(evC.value)+toInt(evD.value)+toInt(evS.value);
-    evTotal.textContent = String(t);
-  }
-  [evH,evA,evB,evC,evD,evS].forEach(x=>{
-    x.addEventListener("input", calcEV);
-    x.addEventListener("blur", (e)=>{ if(!e.target.value.trim()) e.target.value="0"; e.target.value=String(toInt(e.target.value)); calcEV(); });
-  });
-
-  function pokeClear(){
-    pokeEditing = null;
-    pokeEditorTitle.textContent = "ポケモン：新規 / 編集";
-    pokeGame.value = ""; pokeMode.value="";
-    pname.value=""; nature.value=""; ability.value=""; item.value="";
-    tera.value=""; pokeTeam.value=""; pokeTags.value="";     // Ver1.1 team clear
-    m1.value=""; m2.value=""; m3.value=""; m4.value="";
-    evH.value=evA.value=evB.value=evC.value=evD.value=evS.value="0";
-    iv.value=""; notes.value="";
-    btnDeletePokemon.classList.add("hide");
-    calcEV();
-  }
-
-  function pokeFill(it){
-    pokeEditing = it.id;
-    pokeEditorTitle.textContent = `編集中：${it.pname || "（無名）"}`;
-    pokeGame.value = it.game || "";
-    pokeMode.value = it.mode || "";
-    pname.value = it.pname || "";
-    nature.value = it.nature || "";
-    ability.value = it.ability || "";
-    item.value = it.item || "";
-    tera.value = it.tera || "";
-    pokeTeam.value = it.team || "";       // Ver1.1 team fill
-    pokeTags.value = (it.tags||[]).join(", ");
-    const mv = it.moves || ["","","",""];
-    m1.value=mv[0]||""; m2.value=mv[1]||""; m3.value=mv[2]||""; m4.value=mv[3]||"";
-    const ev = it.ev || {H:0,A:0,B:0,C:0,D:0,S:0};
-    evH.value=String(ev.H??0); evA.value=String(ev.A??0); evB.value=String(ev.B??0);
-    evC.value=String(ev.C??0); evD.value=String(ev.D??0); evS.value=String(ev.S??0);
-    iv.value = it.iv || "";
-    notes.value = it.notes || "";
-    btnDeletePokemon.classList.remove("hide");
-    calcEV();
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
-
-  function pokeUpsert(){
-    const it = {
-      id: pokeEditing || uid(),
-      game: pokeGame.value,
-      mode: pokeMode.value,
-      pname: pname.value.trim(),
-      nature: nature.value.trim(),
-      ability: ability.value.trim(),
-      item: item.value.trim(),
-      tera: tera.value.trim(),
-      team: pokeTeam.value.trim(),        // Ver1.1
-      tags: tags(pokeTags.value),
-      moves: [m1.value.trim(), m2.value.trim(), m3.value.trim(), m4.value.trim()].filter(Boolean),
-      ev: { H: toInt(evH.value), A: toInt(evA.value), B: toInt(evB.value), C: toInt(evC.value), D: toInt(evD.value), S: toInt(evS.value) },
-      iv: iv.value.trim(),
-      notes: notes.value.trim(),
-      updatedAt: nowISO(),
-      createdAt: nowISO()
-    };
-    if (!it.pname) return setStatus("ポケモン名を入れてください");
-    const idx = pokeDB.findIndex(x=>x.id===it.id);
-    if (idx >= 0){
-      it.createdAt = pokeDB[idx].createdAt || it.createdAt;
-      pokeDB[idx] = it;
-      setStatus("更新しました");
-    } else {
-      pokeDB.unshift(it);
-      setStatus("保存しました");
-    }
-    save(K.pokemon, pokeDB);
-    pokeFill(it);
-    renderAll();
-  }
-
-  function pokeRemove(){
-    if(!pokeEditing) return;
-    const it = pokeDB.find(x=>x.id===pokeEditing);
-    if(!it) return;
-    if(!confirm(`${it.pname||"このメモ"} を削除します。よろしいですか？`)) return;
-    pokeDB = pokeDB.filter(x=>x.id!==pokeEditing);
-    save(K.pokemon, pokeDB);
-    setStatus("削除しました");
-    pokeClear();
-    renderAll();
-  }
-
-  function pokeSearchText(it){
-    return [
-      it.game,it.mode,it.pname,it.nature,it.ability,it.item,it.tera,it.team,  // team追加
-      ...(it.tags||[]), ...(it.moves||[]), it.iv, it.notes
-    ].join(" ").toLowerCase();
-  }
-
-  function renderPokemon(){
-    const q = (search.value||"").trim().toLowerCase();
-    const gf = pokeFilterGame.value;
-    const sort = pokeSort.value;
-　　const tf = (pokeFilterTeam.value || "");
-    
-    let items = pokeDB.slice();
-    // ---- チームタブ生成（すべて / 未設定 / 登録済み）----
-const teams = Array.from(new Set(pokeDB.map(x => (x.team || "").trim()).filter(Boolean)))
-  .sort((a,b)=>a.localeCompare(b,"ja"));
-
-// タブ描画
-if (teamTabs) {
-  const tabHtml = [
-    { key:"", label:"すべて" },
-    { key:"__UNSET__", label:"未設定" },
-    ...teams.map(t => ({ key:t, label:t }))
-  ].map(t => {
-    const on = (t.key === activeTeamTab) ? "teamtab active" : "teamtab";
-    return `<button type="button" class="${on}" data-team="${esc(t.key)}">${esc(t.label)}</button>`;
-  }).join("");
-
-  teamTabs.innerHTML = tabHtml;
-
-  // 初期状態：activeTeamTab が未設定なら「すべて」
-  if (activeTeamTab == null) activeTeamTab = "";
-}
-    // チーム候補を自動生成（既存データから）
-const teams = Array.from(new Set(pokeDB.map(x => (x.team || "").trim()).filter(Boolean)))
-  .sort((a,b)=>a.localeCompare(b,"ja"));
-
-const current = pokeFilterTeam.value || "";
-pokeFilterTeam.innerHTML = `<option value="">チーム：すべて</option>` +
-  teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
-
-pokeFilterTeam.value = current;
-if(gf) items = items.filter(x=>x.game===gf);
-
-// タブで絞り込み（優先）
-if (activeTeamTab === "__UNSET__") {
-  items = items.filter(x => !(x.team || "").trim());
-} else if (activeTeamTab) {
-  items = items.filter(x => (x.team || "") === activeTeamTab);
-} else if (tf) {
-  // プルダウンも残している場合：タブが「すべて」のときだけ適用
-  items = items.filter(x => (x.team || "") === tf);
+btnApplyPreset.onclick=()=>{
+const v=evPreset.value
+if(!v)return
+const map={H:0,A:0,B:0,C:0,D:0,S:0}
+v.split(",").forEach(p=>{
+const key=p.charAt(0)
+const num=parseInt(p.slice(1))
+if(map.hasOwnProperty(key))map[key]=num
+})
+$("evH").value=map.H
+$("evA").value=map.A
+$("evB").value=map.B
+$("evC").value=map.C
+$("evD").value=map.D
+$("evS").value=map.S
 }
 
-if(q) items = items.filter(x=>pokeSearchText(x).includes(q));
-    if(sort==="updated_desc") items.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
-    if(sort==="name_asc") items.sort((a,b)=>(a.pname||"").localeCompare(b.pname||"", "ja"));
+$("btnIVAll31").onclick=()=>iv.value="H31 A31 B31 C31 D31 S31"
+$("btnIVS0").onclick=()=>iv.value+=" / S0"
+$("btnIVA0").onclick=()=>iv.value+=" / A0"
+$("btnIVC0").onclick=()=>iv.value+=" / C0"
+$("btnIVClear").onclick=()=>iv.value=""
 
-    $("count").textContent = String(items.length);
-    pokeList.innerHTML = "";
-    pokeEmpty.style.display = items.length ? "none":"block";
-
-    for(const it of items){
-      const ev = it.ev || {H:0,A:0,B:0,C:0,D:0,S:0};
-      const evT = Object.values(ev).reduce((s,n)=>s+(Number(n)||0),0);
-      const tagHtml = (it.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
-      const moves = (it.moves && it.moves.length) ? it.moves.join(" / ") : "—";
-      const teamLine = it.team ? ` ・ チーム:${esc(it.team)}` : "";
-      const node = document.createElement("div");
-      node.className = "item";
-      node.innerHTML = `
-        <div class="item-head">
-          <div style="min-width:0;">
-            <div class="title">${esc(it.pname||"（無名）")}</div>
-            <div class="sub">${esc(it.game||"未設定")} ・ ${esc(it.mode||"未設定")}${teamLine} ・ 性格:${esc(it.nature||"—")} ・ 特性:${esc(it.ability||"—")}</div>
-          </div>
-          <div class="row" style="flex-wrap:nowrap;">
-            <button class="primary" data-act="poke-edit" data-id="${it.id}">編集</button>
-            <button class="danger" data-act="poke-del" data-id="${it.id}">削除</button>
-          </div>
-        </div>
-        <div class="tags">${tagHtml}</div>
-        <div class="mutedline"></div>
-        <div class="small"><strong>持ち物</strong>：${esc(it.item||"—")} / <strong>テラ</strong>：${esc(it.tera||"—")}</div>
-        <div class="small" style="margin-top:6px;"><strong>技</strong>：${esc(moves)}</div>
-        <div class="small" style="margin-top:6px;"><strong>EV</strong>：<span class="mono">H${ev.H||0} A${ev.A||0} B${ev.B||0} C${ev.C||0} D${ev.D||0} S${ev.S||0}</span>（合計 ${evT}）</div>
-        ${it.iv ? `<div class="small" style="margin-top:6px;"><strong>IV</strong>：${esc(it.iv)}</div>` : ``}
-        ${it.notes ? `<div class="mutedline"></div><div class="small"><strong>メモ</strong><br>${esc(it.notes).replace(/\n/g,"<br>")}</div>` : ``}
-      `;
-      pokeList.appendChild(node);
-    }
-  }
-
-  // =========================
-  // Yu-Gi-Oh module
-  // =========================
-  let ygoDecks = load(K.ygoDecks, []);
-  let ygoOwn = load(K.ygoOwn, {}); // name -> count
-  let deckEditing = null;
-  let selectedDeckId = null;
-
-  const ygoGame = $("ygoGame");
-  const deckName = $("deckName");
-  const deckMain = $("deckMain");
-  const deckExtra = $("deckExtra");
-  const deckSide = $("deckSide");
-  const ygoTags = $("ygoTags");
-  const ygoNotes = $("ygoNotes");
-  const ygoEditorTitle = $("ygoEditorTitle");
-  const btnSaveDeck = $("btnSaveDeck");
-  const btnClearDeck = $("btnClearDeck");
-  const btnDeleteDeck = $("btnDeleteDeck");
-
-  const ownName = $("ownName");
-  const ownCount = $("ownCount");
-  const btnAddOwn = $("btnAddOwn");
-  const btnClearOwn = $("btnClearOwn");
-  const ownList = $("ownList");
-
-  const ygoSort = $("ygoSort");
-  const deckList = $("deckList");
-  const deckEmpty = $("deckEmpty");
-
-  const btnShowMissing = $("btnShowMissing");
-  const missingBox = $("missingBox");
-  const missingTitle = $("missingTitle");
-  const missingList = $("missingList");
-  const btnCloseMissing = $("btnCloseMissing");
-
-  function parseLines(text){
-    const lines = (text||"").split("\n").map(x=>x.trim()).filter(Boolean);
-    const out = [];
-    for(const line of lines){
-      const m = line.match(/^(.*?)(?:\s*[x×]\s*|\s+)(\d+)\s*$/i);
-      if(m){
-        const name = m[1].trim();
-        const cnt = toInt(m[2]);
-        if(name) out.push({name, cnt: Math.max(0,cnt)});
-      } else {
-        out.push({name: line, cnt: 1});
-      }
-    }
-    return out;
-  }
-
-  function normName(s){ return (s||"").trim(); }
-
-  function deckClear(){
-    deckEditing = null;
-    ygoEditorTitle.textContent = "遊戯王：デッキ 新規 / 編集";
-    ygoGame.value=""; deckName.value=""; deckMain.value=""; deckExtra.value=""; deckSide.value="";
-    ygoTags.value=""; ygoNotes.value="";
-    btnDeleteDeck.classList.add("hide");
-  }
-
-  function deckFill(d){
-    deckEditing = d.id;
-    selectedDeckId = d.id;
-    ygoEditorTitle.textContent = `編集中：${d.name||"（無名）"}`;
-    ygoGame.value = d.game || "";
-    deckName.value = d.name || "";
-    deckMain.value = d.mainText || "";
-    deckExtra.value = d.extraText || "";
-    deckSide.value = d.sideText || "";
-    ygoTags.value = (d.tags||[]).join(", ");
-    ygoNotes.value = d.notes || "";
-    btnDeleteDeck.classList.remove("hide");
-    window.scrollTo({top:0,behavior:"smooth"});
-  }
-
-  function deckUpsert(){
-    const d = {
-      id: deckEditing || uid(),
-      game: ygoGame.value,
-      name: deckName.value.trim(),
-      mainText: deckMain.value,
-      extraText: deckExtra.value,
-      sideText: deckSide.value,
-      tags: tags(ygoTags.value),
-      notes: ygoNotes.value.trim(),
-      updatedAt: nowISO(),
-      createdAt: nowISO()
-    };
-    if(!d.name) return setStatus("デッキ名を入れてください");
-    const idx = ygoDecks.findIndex(x=>x.id===d.id);
-    if(idx>=0){
-      d.createdAt = ygoDecks[idx].createdAt || d.createdAt;
-      ygoDecks[idx] = d;
-      setStatus("デッキを更新しました");
-    } else {
-      ygoDecks.unshift(d);
-      setStatus("デッキを保存しました");
-    }
-    save(K.ygoDecks, ygoDecks);
-    deckFill(d);
-    renderAll();
-  }
-
-  function deckRemove(){
-    if(!deckEditing) return;
-    const d = ygoDecks.find(x=>x.id===deckEditing);
-    if(!d) return;
-    if(!confirm(`${d.name||"このデッキ"} を削除します。よろしいですか？`)) return;
-    ygoDecks = ygoDecks.filter(x=>x.id!==deckEditing);
-    save(K.ygoDecks, ygoDecks);
-    setStatus("デッキを削除しました");
-    deckClear();
-    renderAll();
-  }
-
-  function ygoSearchText(d){
-    return [
-      d.game,d.name, ...(d.tags||[]), d.notes,
-      d.mainText, d.extraText, d.sideText
-    ].join(" ").toLowerCase();
-  }
-
-  function renderOwn(){
-    const pairs = Object.entries(ygoOwn).sort((a,b)=>a[0].localeCompare(b[0],"ja"));
-    ownList.textContent = pairs.length
-      ? pairs.map(([n,c])=>`${n} : ${c}`).join("\n")
-      : "（まだ登録なし）";
-  }
-
-  function renderDecks(){
-    const q = (search.value||"").trim().toLowerCase();
-    const sort = ygoSort.value;
-
-    let items = ygoDecks.slice();
-    if(q) items = items.filter(x=>ygoSearchText(x).includes(q));
-
-    if(sort==="updated_desc") items.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
-    if(sort==="name_asc") items.sort((a,b)=>(a.name||"").localeCompare(b.name||"","ja"));
-
-    $("count").textContent = String(items.length);
-    deckList.innerHTML = "";
-    deckEmpty.style.display = items.length ? "none":"block";
-
-    for(const d of items){
-      const tagHtml = (d.tags||[]).map(t=>`<span class="tag">${esc(t)}</span>`).join("");
-      const node = document.createElement("div");
-      node.className = "item";
-      node.innerHTML = `
-        <div class="item-head">
-          <div style="min-width:0;">
-            <div class="title">${esc(d.name||"（無名）")}</div>
-            <div class="sub">${esc(d.game||"未設定")} ・ 更新:${esc((d.updatedAt||"").slice(0,19).replace("T"," "))}</div>
-          </div>
-          <div class="row" style="flex-wrap:nowrap;">
-            <button class="primary" data-act="deck-edit" data-id="${d.id}">編集</button>
-            <button class="ghost" data-act="deck-select" data-id="${d.id}">不足</button>
-            <button class="danger" data-act="deck-del" data-id="${d.id}">削除</button>
-          </div>
-        </div>
-        <div class="tags">${tagHtml}</div>
-        ${d.notes ? `<div class="mutedline"></div><div class="small"><strong>メモ</strong><br>${esc(d.notes).replace(/\n/g,"<br>")}</div>` : ``}
-      `;
-      deckList.appendChild(node);
-    }
-  }
-
-  function computeMissing(deckId){
-    const d = ygoDecks.find(x=>x.id===deckId);
-    if(!d) return { deck:null, missing:[] };
-
-    const req = new Map();
-    const add = (arr) => {
-      for(const it of arr){
-        const n = normName(it.name);
-        if(!n) continue;
-        req.set(n, (req.get(n)||0) + Math.max(0, it.cnt||0));
-      }
-    };
-    add(parseLines(d.mainText));
-    add(parseLines(d.extraText));
-    add(parseLines(d.sideText));
-
-    const missing = [];
-    for(const [name, need] of req.entries()){
-      const owned = toInt(ygoOwn[name] ?? 0);
-      const lack = need - owned;
-      if(lack > 0) missing.push({name, need, owned, lack});
-    }
-    missing.sort((a,b)=>b.lack-a.lack || a.name.localeCompare(b.name,"ja"));
-    return { deck:d, missing };
-  }
-
-  function showMissing(deckId){
-    const {deck, missing} = computeMissing(deckId);
-    if(!deck) return setStatus("デッキが見つかりません");
-    selectedDeckId = deck.id;
-
-    missingTitle.textContent = `不足カード：${deck.name}`;
-    missingList.innerHTML = "";
-
-    if(!missing.length){
-      const node = document.createElement("div");
-      node.className = "item";
-      node.innerHTML = `<div class="title" style="font-size:14px;">不足なし ✅</div><div class="small">所持カードの範囲では、必要枚数を満たしています。</div>`;
-      missingList.appendChild(node);
-    } else {
-      for(const m of missing){
-        const node = document.createElement("div");
-        node.className = "item";
-        node.innerHTML = `
-          <div class="item-head">
-            <div style="min-width:0;">
-              <div class="title" style="font-size:14px;">${esc(m.name)}</div>
-              <div class="sub">必要 ${m.need} / 所持 ${m.owned} / 不足 <span class="mono">${m.lack}</span></div>
-            </div>
-            <button class="ghost" data-act="own-fill" data-name="${esc(m.name)}">所持入力へ</button>
-          </div>
-        `;
-        missingList.appendChild(node);
-      }
-    }
-
-    missingBox.classList.remove("hide");
-    setStatus("不足を計算しました");
-  }
-
-  // =========================
-  // Export / Import / Wipe
-  // =========================
-  btnExport.onclick = () => {
-    const payload = {
-      version: 1,
-      exportedAt: nowISO(),
-      pokemon: pokeDB,
-      ygoDecks,
-      ygoOwn
-    };
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {type:"application/json"});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `hobby_app_backup_${new Date().toISOString().slice(0,10)}.json`;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-    setStatus("エクスポートしました");
-  };
-
-  btnImport.onclick = () => fileInput.click();
-  fileInput.onchange = async () => {
-    const file = fileInput.files?.[0];
-    fileInput.value = "";
-    if(!file) return;
-    try{
-      const text = await file.text();
-      const p = JSON.parse(text);
-      if(!p) throw new Error();
-      if(Array.isArray(p.pokemon)) pokeDB = p.pokemon;
-      if(Array.isArray(p.ygoDecks)) ygoDecks = p.ygoDecks;
-      if(p.ygoOwn && typeof p.ygoOwn === "object") ygoOwn = p.ygoOwn;
-      save(K.pokemon, pokeDB);
-      save(K.ygoDecks, ygoDecks);
-      save(K.ygoOwn, ygoOwn);
-      setStatus("インポートしました");
-      renderAll();
-    } catch {
-      setStatus("インポート失敗（JSON形式を確認）");
-    }
-  };
-
-  btnWipe.onclick = () => {
-    if(!confirm("本当に全削除しますか？（戻せません。先にエクスポート推奨）")) return;
-    pokeDB = []; ygoDecks = []; ygoOwn = {};
-    save(K.pokemon, pokeDB); save(K.ygoDecks, ygoDecks); save(K.ygoOwn, ygoOwn);
-    pokeClear(); deckClear();
-    missingBox.classList.add("hide");
-    setStatus("全削除しました");
-    renderAll();
-  };
-
-  // =========================
-  // Wiring UI events
-  // =========================
-  search.addEventListener("input", renderAll);
-
-  btnNew.onclick = () => {
-    if(activeTab==="pokemon"){ pokeClear(); pname.focus(); }
-    else { deckClear(); deckName.focus(); }
-    setStatus("新規入力を開始できます");
-  };
-
-  // Pokemon buttons
-  btnSavePokemon.onclick = pokeUpsert;
-  btnClearPokemon.onclick = () => { pokeClear(); setStatus("入力をクリアしました"); };
-  btnDeletePokemon.onclick = pokeRemove;
-
-  pokeFilterGame.onchange = renderAll;
-  pokeSort.onchange = renderAll;
-　pokeFilterTeam.onchange = renderAll;
-  
-  // ✅ EVテンプレ適用（コロンあり/なし両対応）
-  btnApplyPreset.onclick = () => {
-    const v = (evPreset.value || "").trim();
-    if (!v) return setStatus("テンプレを選んでください");
-
-    const map = { H:0, A:0, B:0, C:0, D:0, S:0 };
-
-    v.split(",").forEach(part => {
-      const p = part.trim();
-      if (!p) return;
-
-      // 形式1: H:252
-      if (p.includes(":")) {
-        const [k, val] = p.split(":");
-        const key = (k || "").trim().toUpperCase();
-        const num = parseInt((val || "").trim(), 10);
-        if ("HABCDS".includes(key) && Number.isFinite(num)) map[key] = num;
-        return;
-      }
-
-      // 形式2: H252（コロン無し）
-      const key = p.slice(0,1).toUpperCase();
-      const num = parseInt(p.slice(1), 10);
-      if ("HABCDS".includes(key) && Number.isFinite(num)) map[key] = num;
-    });
-
-    evH.value = String(map.H||0);
-    evA.value = String(map.A||0);
-    evB.value = String(map.B||0);
-    evC.value = String(map.C||0);
-    evD.value = String(map.D||0);
-    evS.value = String(map.S||0);
-
-    calcEV();
-    setStatus("テンプレを適用しました");
-  };
-  function ivAppend(token){
-  const cur = (iv.value || "").trim();
-  if(!cur) { iv.value = token; return; }
-  // すでに入ってたら何もしない
-  if(cur.includes(token)) return;
-  iv.value = cur + " / " + token;
+$("btnSave").onclick=()=>{
+const data={
+id:Date.now(),
+name:$("pname").value,
+team:$("pokeTeam").value,
+ev:{
+H:$("evH").value,
+A:$("evA").value,
+B:$("evB").value,
+C:$("evC").value,
+D:$("evD").value,
+S:$("evS").value
+},
+iv:iv.value
+}
+pokeDB.unshift(data)
+localStorage.setItem("pokeDB",JSON.stringify(pokeDB))
+render()
 }
 
-btnIVAll31.onclick = () => {
-  iv.value = "H31 A31 B31 C31 D31 S31";
-  setStatus("全V(31) ひな形を入れました");
-};
-btnIVS0.onclick = () => { ivAppend("S0"); setStatus("S0 を追加しました"); };
-btnIVA0.onclick = () => { ivAppend("A0"); setStatus("A0 を追加しました"); };
-btnIVC0.onclick = () => { ivAppend("C0"); setStatus("C0 を追加しました"); };
-btnIVClear.onclick = () => { iv.value=""; setStatus("IVをクリアしました"); };
+function render(){
+renderTabs()
+renderList()
+}
 
-  pokeList.addEventListener("click", (e)=>{
-    const t = e.target;
-    if(!(t instanceof HTMLElement)) return;
-    const act = t.getAttribute("data-act");
-    const id = t.getAttribute("data-id");
-    if(!act || !id) return;
-    const it = pokeDB.find(x=>x.id===id);
-    if(!it) return;
-    if(act==="poke-edit") pokeFill(it);
-    if(act==="poke-del"){
-      pokeEditing = it.id;
-      pokeRemove();
-    }
-  });
-  if (teamTabs) {
-  teamTabs.addEventListener("click", (e) => {
-    const t = e.target;
-    if(!(t instanceof HTMLElement)) return;
-    const key = t.getAttribute("data-team");
-    if (key == null) return;
-    activeTeamTab = key;
-    renderAll();
-  });
-  }
+function renderTabs(){
+const teamTabs=$("teamTabs")
+const teams=[...new Set(pokeDB.map(x=>x.team||""))]
+teamTabs.innerHTML=""
 
-  // YGO buttons
-  btnSaveDeck.onclick = deckUpsert;
-  btnClearDeck.onclick = () => { deckClear(); setStatus("入力をクリアしました"); };
-  btnDeleteDeck.onclick = deckRemove;
+const create=(key,label)=>{
+const btn=document.createElement("button")
+btn.textContent=label
+btn.className="teamtab"+(activeTeamTab===key?" active":"")
+btn.onclick=()=>{activeTeamTab=key;render()}
+teamTabs.appendChild(btn)
+}
 
-  btnAddOwn.onclick = () => {
-    const n = normName(ownName.value);
-    const c = Math.max(0, Math.min(3, toInt(ownCount.value)));
-    if(!n) return setStatus("カード名を入れてください");
-    ygoOwn[n] = c;
-    save(K.ygoOwn, ygoOwn);
-    setStatus("所持カードを更新しました");
-    renderOwn();
-    ownName.value=""; ownCount.value="";
-  };
-  btnClearOwn.onclick = () => { ownName.value=""; ownCount.value=""; };
+create("","すべて")
+create("__UNSET__","未設定")
+teams.filter(t=>t).forEach(t=>create(t,t))
+}
 
-  ygoSort.onchange = renderAll;
+function renderList(){
+const list=$("pokeList")
+list.innerHTML=""
+let items=pokeDB.slice()
 
-  deckList.addEventListener("click", (e)=>{
-    const t = e.target;
-    if(!(t instanceof HTMLElement)) return;
-    const act = t.getAttribute("data-act");
-    const id = t.getAttribute("data-id");
-    if(!act || !id) return;
-    const d = ygoDecks.find(x=>x.id===id);
-    if(!d) return;
-    if(act==="deck-edit") deckFill(d);
-    if(act==="deck-del"){ deckEditing = d.id; deckRemove(); }
-    if(act==="deck-select") showMissing(d.id);
-  });
+if(activeTeamTab==="__UNSET__"){
+items=items.filter(x=>!x.team)
+}else if(activeTeamTab){
+items=items.filter(x=>x.team===activeTeamTab)
+}
 
-  btnShowMissing.onclick = () => {
-    if(!selectedDeckId) return setStatus("まずデッキの「不足」か「編集」を押して対象を選んでください");
-    showMissing(selectedDeckId);
-  };
-  btnCloseMissing.onclick = () => missingBox.classList.add("hide");
+items.forEach(p=>{
+const div=document.createElement("div")
+div.style.marginBottom="10px"
+div.innerHTML="<b>"+p.name+"</b><br>チーム："+(p.team||"未設定")+"<br>EV H"+p.ev.H+" A"+p.ev.A+" B"+p.ev.B+" C"+p.ev.C+" D"+p.ev.D+" S"+p.ev.S+"<br>IV："+p.iv
+list.appendChild(div)
+})
+}
 
-  missingList.addEventListener("click", (e)=>{
-    const t = e.target;
-    if(!(t instanceof HTMLElement)) return;
-    const act = t.getAttribute("data-act");
-    if(act!=="own-fill") return;
-    const name = t.getAttribute("data-name");
-    if(!name) return;
-    ownName.value = name;
-    ownCount.value = String(toInt(ygoOwn[name] ?? 0));
-    window.scrollTo({top:0,behavior:"smooth"});
-    setStatus("所持カード入力に反映しました");
-  });
-
-  function renderAll(){
-    if(activeTab==="pokemon"){
-      renderPokemon();
-    } else {
-      renderDecks();
-      renderOwn();
-    }
-  }
-
-  // init
-  pokeClear(); deckClear(); calcEV();
-  renderAll();
-})();
+render()
 </script>
 </body>
-          </html>
-
-
-
-
+</html>
