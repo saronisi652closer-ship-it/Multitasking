@@ -125,6 +125,12 @@ select, button { max-width: 100%; }
 
 /* 念のため：横ズレ防止 */
 html, body { overflow-x: hidden; }
+    /* === 右切れ根絶：スマホでは編集/削除ボタンを縦積み(100%幅)にする === */
+@media (max-width: 520px) {
+  .item-head { flex-wrap: wrap; }
+  .item-head > .row { width: 100%; flex-wrap: wrap; gap: 8px; }
+  .item-head > .row button { width: 100%; }
+}
   </style>
 </head>
 
@@ -1162,6 +1168,7 @@ html, body { overflow-x: hidden; }
 </script>
 </body>
 </html>
+
 
 
 
