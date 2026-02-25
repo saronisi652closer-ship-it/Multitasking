@@ -462,6 +462,10 @@
     ability.value = it.ability || "";
     item.value = it.item || "";
     tera.value = it.tera || "";
+    const pokeTeam = $("pokeTeam");
+
+const evPreset = $("evPreset");
+const btnApplyPreset = $("btnApplyPreset");
     pokeTags.value = (it.tags||[]).join(", ");
     const mv = it.moves || ["","","",""];
     m1.value=mv[0]||""; m2.value=mv[1]||""; m3.value=mv[2]||""; m4.value=mv[3]||"";
@@ -964,3 +968,4 @@
 </body>
 
 </html>
+
