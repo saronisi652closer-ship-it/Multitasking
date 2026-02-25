@@ -16,8 +16,19 @@
       --shadow: 0 8px 24px rgba(0,0,0,.35);
       --radius:16px;
     }
+    <link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0b0d12">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     *{box-sizing:border-box}
     body{
+      る<script>
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("./sw.js");
+    });
+  }
+</script>
       margin:0;
       font-family: system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,"Noto Sans JP",sans-serif;
       background: radial-gradient(1200px 800px at 20% 0%, #131a2b 0%, var(--bg) 55%) fixed;
