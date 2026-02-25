@@ -1,4 +1,4 @@
-const CACHE = "hobby-pwa-v1";
+const CACHE_NAME = "hobby-pwa-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -35,4 +35,5 @@ self.addEventListener("fetch", (event) => {
       }).catch(() => caches.match("./index.html"));
     })
   );
+
 });
