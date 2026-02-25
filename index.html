@@ -83,6 +83,20 @@ input, textarea, select, button { width: 100%; }
   header .row { align-items: stretch; }
   #search { min-width: 0 !important; width: 100% !important; }
 }
+    /* チームタブ */
+.teamtab{
+  white-space:nowrap;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  background:#0f1117;
+}
+.teamtab.active{
+  border-color:rgba(110,231,183,.45);
+  color:var(--text);
+  background:rgba(110,231,183,.10);
+}
   </style>
 </head>
 
@@ -258,6 +272,7 @@ input, textarea, select, button { width: 100%; }
 
       <section class="card">
         <h2>ポケモン：一覧</h2>
+        <div id="teamTabs" class="row" style="overflow-x:auto; flex-wrap:nowrap; gap:8px; padding-bottom:6px;"></div>
         <div class="row">
           <select id="pokeFilterGame">
             <option value="">作品：すべて</option>
@@ -487,6 +502,8 @@ const btnIVClear = $("btnIVClear");
   const pokeFilterGame = $("pokeFilterGame");
   const pokeSort = $("pokeSort");
 　const pokeFilterTeam = $("pokeFilterTeam");
+  const teamTabs = $("teamTabs");
+let activeTeamTab = ""; // ""=すべて, "__UNSET__"=未設定, それ以外=チーム名
   
   function calcEV(){
     const t = toInt(evH.value)+toInt(evA.value)+toInt(evB.value)+toInt(evC.value)+toInt(evD.value)+toInt(evS.value);
@@ -594,6 +611,26 @@ const btnIVClear = $("btnIVClear");
 　　const tf = (pokeFilterTeam.value || "");
     
     let items = pokeDB.slice();
+    // ---- チームタブ生成（すべて / 未設定 / 登録済み）----
+const teams = Array.from(new Set(pokeDB.map(x => (x.team || "").trim()).filter(Boolean)))
+  .sort((a,b)=>a.localeCompare(b,"ja"));
+
+// タブ描画
+if (teamTabs) {
+  const tabHtml = [
+    { key:"", label:"すべて" },
+    { key:"__UNSET__", label:"未設定" },
+    ...teams.map(t => ({ key:t, label:t }))
+  ].map(t => {
+    const on = (t.key === activeTeamTab) ? "teamtab active" : "teamtab";
+    return `<button type="button" class="${on}" data-team="${esc(t.key)}">${esc(t.label)}</button>`;
+  }).join("");
+
+  teamTabs.innerHTML = tabHtml;
+
+  // 初期状態：activeTeamTab が未設定なら「すべて」
+  if (activeTeamTab == null) activeTeamTab = "";
+}
     // チーム候補を自動生成（既存データから）
 const teams = Array.from(new Set(pokeDB.map(x => (x.team || "").trim()).filter(Boolean)))
   .sort((a,b)=>a.localeCompare(b,"ja"));
@@ -603,10 +640,19 @@ pokeFilterTeam.innerHTML = `<option value="">チーム：すべて</option>` +
   teams.map(t => `<option value="${esc(t)}">${esc(t)}</option>`).join("");
 
 pokeFilterTeam.value = current;
-    if(gf) items = items.filter(x=>x.game===gf);
-    if(tf) items = items.filter(x => (x.team || "") === tf);
-    if(q) items = items.filter(x=>pokeSearchText(x).includes(q));
+if(gf) items = items.filter(x=>x.game===gf);
 
+// タブで絞り込み（優先）
+if (activeTeamTab === "__UNSET__") {
+  items = items.filter(x => !(x.team || "").trim());
+} else if (activeTeamTab) {
+  items = items.filter(x => (x.team || "") === activeTeamTab);
+} else if (tf) {
+  // プルダウンも残している場合：タブが「すべて」のときだけ適用
+  items = items.filter(x => (x.team || "") === tf);
+}
+
+if(q) items = items.filter(x=>pokeSearchText(x).includes(q));
     if(sort==="updated_desc") items.sort((a,b)=>(b.updatedAt||"").localeCompare(a.updatedAt||""));
     if(sort==="name_asc") items.sort((a,b)=>(a.pname||"").localeCompare(b.pname||"", "ja"));
 
@@ -1015,6 +1061,16 @@ btnIVClear.onclick = () => { iv.value=""; setStatus("IVをクリアしました"
       pokeRemove();
     }
   });
+  if (teamTabs) {
+  teamTabs.addEventListener("click", (e) => {
+    const t = e.target;
+    if(!(t instanceof HTMLElement)) return;
+    const key = t.getAttribute("data-team");
+    if (key == null) return;
+    activeTeamTab = key;
+    renderAll();
+  });
+  }
 
   // YGO buttons
   btnSaveDeck.onclick = deckUpsert;
@@ -1083,6 +1139,7 @@ btnIVClear.onclick = () => { iv.value=""; setStatus("IVをクリアしました"
 </script>
 </body>
           </html>
+
 
 
 
