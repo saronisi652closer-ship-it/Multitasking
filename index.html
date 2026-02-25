@@ -444,7 +444,7 @@
     pokeEditing = null;
     pokeEditorTitle.textContent = "ポケモン：新規 / 編集";
     pokeGame.value = ""; pokeMode.value="";
-    pname.value=""; nature.value=""; ability.value=""; item.value=""; tera.value=""; pokeTags.value="";
+    pname.value=""; nature.value=""; ability.value=""; item.value=""; tera.value=""; pokeTags.value="";pokeTeam.value = "";
     m1.value=""; m2.value=""; m3.value=""; m4.value="";
     evH.value=evA.value=evB.value=evC.value=evD.value=evS.value="0";
     iv.value=""; notes.value="";
@@ -462,6 +462,7 @@
     ability.value = it.ability || "";
     item.value = it.item || "";
     tera.value = it.tera || "";
+    pokeTeam.value = it.team || "";
     const pokeTeam = $("pokeTeam");
 
 const evPreset = $("evPreset");
@@ -489,8 +490,8 @@ const btnApplyPreset = $("btnApplyPreset");
       ability: ability.value.trim(),
       item: item.value.trim(),
       tera: tera.value.trim(),
-team: pokeTeam.value.trim(),
-tags: tags(pokeTags.value),
+　　　team: pokeTeam.value.trim(),
+　　　tags: tags(pokeTags.value),
       moves: [m1.value.trim(), m2.value.trim(), m3.value.trim(), m4.value.trim()].filter(Boolean),
       ev: { H: toInt(evH.value), A: toInt(evA.value), B: toInt(evB.value), C: toInt(evC.value), D: toInt(evD.value), S: toInt(evS.value) },
       iv: iv.value.trim(),
@@ -527,7 +528,7 @@ tags: tags(pokeTags.value),
 
   function pokeSearchText(it){
     return [
-      it.game,it.mode,it.pname,it.nature,it.ability,it.item,it.tera,
+  it.game,it.mode,it.pname,it.nature,it.ability,it.item,it.tera,it.team,
       ...(it.tags||[]), ...(it.moves||[]), it.iv, it.notes
     ].join(" ").toLowerCase();
   }
@@ -969,5 +970,6 @@ tags: tags(pokeTags.value),
 </body>
 
 </html>
+
 
 
