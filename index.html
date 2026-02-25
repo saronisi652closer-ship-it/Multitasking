@@ -117,6 +117,30 @@
       #evPreset { width: 100% !important; }
       #btnApplyPreset { width: 100% !important; margin-left: 0 !important; }
     }
+    /* ==== 横はみ出し完全防止パッチ ==== */
+* {
+  max-width: 100%;
+}
+
+.row {
+  flex-wrap: wrap;
+}
+
+.card {
+  width: 100%;
+}
+
+input, select, textarea, button {
+  max-width: 100%;
+}
+
+.item-head {
+  flex-wrap: wrap;
+}
+
+.item-head > .row {
+  flex-wrap: wrap;
+}
   </style>
 </head>
 
@@ -695,3 +719,4 @@
           <div style="min-width:0;">
             <div class="title">${esc(it.pname||"（無名）")}</div>
             <div class="sub">${esc(it.game
+
