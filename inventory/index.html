@@ -291,6 +291,82 @@
     .modal .body textarea{min-height:260px}
     .row{display:flex; gap:10px; align-items:center; flex-wrap:wrap}
     .muted{color:var(--muted)}
+    /* ===== Slim mode ===== */
+:root{ --chipH: 28px; }
+
+.compact .metaCol,
+.compact .hint,
+.compact .footerHint,
+.compact .detailBlock,
+.compact .categoryBadge,
+.compact .targetBadge { display:none !important; }
+
+.compact .itemCard{
+  padding:12px !important;
+  gap:10px !important;
+}
+
+.compact .itemHeader{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.compact .itemName{
+  font-size:18px !important;
+  font-weight:700;
+  line-height:1.2;
+}
+
+.compact .miniRow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.miniChip{
+  height:var(--chipH);
+  padding:0 10px;
+  border-radius:999px;
+  font-size:12px;
+  display:inline-flex;
+  align-items:center;
+  border:1px solid rgba(255,255,255,.12);
+  opacity:.92;
+}
+
+.compact .qtyBox{
+  min-width:92px;
+  height:40px;
+  font-size:18px;
+  border-radius:12px;
+}
+
+.compact .btn{
+  height:40px;
+  padding:0 12px;
+  border-radius:12px;
+}
+
+.compact .actionsRow{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.compact .actionsRow .btnDanger{ margin-left:auto; }
+
+/* 画面幅が狭い時は自動でスリム */
+@media (max-width: 480px){
+  body.autoCompact .metaCol,
+  body.autoCompact .hint,
+  body.autoCompact .footerHint,
+  body.autoCompact .detailBlock,
+  body.autoCompact .categoryBadge,
+  body.autoCompact .targetBadge { display:none !important; }
+        }
   </style>
 </head>
 <body>
@@ -312,6 +388,11 @@
     <div class="tabs">
       <button class="tabbtn active" id="tabInv">在庫</button>
       <button class="tabbtn" id="tabBuy">購入モード <span class="badge" id="buyBadge" style="display:none;">0</span></button>
+      <div class="tabs">
+  <button class="tabbtn active" id="tabInv">在庫</button>
+  <button class="tabbtn" id="tabBuy">購入モード</button>
+  <button class="tabbtn" id="btnCompact">スリム</button>
+      </div>
     </div>
   </header>
 
@@ -505,6 +586,24 @@
  const LS_ITEMS = "inventory_items_v1";
 const LS_BUY = "inventory_buy_v1";
 const LS_NOTICE_DISMISS = "inventory_notice_dismiss_v1";
+  const LS_UI_COMPACT = "inventory_ui_compact_v1";
+
+function applyCompact(on){
+  document.body.classList.toggle("compact", on);
+  document.body.classList.add("autoCompact");
+  localStorage.setItem(LS_UI_COMPACT, on ? "1":"0");
+  const b = document.getElementById("btnCompact");
+  if (b) b.textContent = on ? "詳細" : "スリム";
+}
+
+window.addEventListener("load", () => {
+  const on = localStorage.getItem(LS_UI_COMPACT) === "1";
+  applyCompact(on);
+  const b = document.getElementById("btnCompact");
+  if (b) b.addEventListener("click", () => {
+    applyCompact(!document.body.classList.contains("compact"));
+  });
+});
 
   /** @type {{id:string,name:string,category:string,unit:string,expiry:string,qty:number,reorder:number,buyQty:number,note:string,updatedAt:number}[]} */
   let items = [];
