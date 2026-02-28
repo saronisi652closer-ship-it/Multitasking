@@ -639,6 +639,39 @@ body.compact #purchaseList .buyQtyChip{
     justify-self: end;
   }
 }
+    /* ===== 購入モード：全部1行にする（最終上書き） ===== */
+@media (max-width:520px){
+
+  #purchaseList .buyActions{
+    display:grid !important;
+    grid-template-columns: 1.4fr .7fr 50px 60px 60px;
+    gap:6px;
+    align-items:center;
+  }
+
+  #purchaseList .buyActions .quickRow,
+  #purchaseList .buyActions .qtyInputRow{
+    display:contents !important;
+  }
+
+  #purchaseList .buyActions .btn{
+    height:34px;
+    padding:0 6px;
+    font-size:12px;
+    border-radius:10px;
+  }
+
+  #purchaseList .buyActions input{
+    width:50px !important;
+    height:34px;
+    padding:0;
+    text-align:center;
+  }
+
+  #purchaseList .buyActions button.danger{
+    width:60px;
+  }
+}
   </style>
 </head>
 
