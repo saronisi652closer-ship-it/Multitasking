@@ -680,6 +680,14 @@
   </div>
 
   <script>
+　　window.addEventListener("load", () => {
+  const boot = document.getElementById("boot");
+  if (boot) {
+    boot.style.transition = "opacity .25s ease";
+    boot.style.opacity = "0";
+    setTimeout(()=>boot.remove(), 260);
+  }
+});
     // Service Worker（PWA）
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
