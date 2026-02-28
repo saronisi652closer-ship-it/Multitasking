@@ -445,6 +445,33 @@
 
 /* 手動メモは購入数がないのでチップ非表示 */
 #purchaseList .buyCard.manual .buyQtyChip{ display:none; }
+/* 1行目：品名 + 購入数 */
+#purchaseList .buyTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  white-space:nowrap;
+}
+#purchaseList .buyName{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+#purchaseList .buyQtyChip{
+  flex:0 0 auto;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:1000;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+}
+
+/* スリム時は2行目（buySub）を消す＝購入数だけ残る */
+.compact #purchaseList .buySub{ display:none !important; }
+    
   </style>
 </head>
 
@@ -907,6 +934,9 @@
       function buyCard(b){
         const isAuto = b.type === "auto";
         const it = isAuto ? items.find(x => x.id === b.itemId) : null;
+        const nameText = isAuto ? (it?.name || "（削除された品目）") : (b.text || "");
+const unit = it?.unit || "";
+const qtyText = (isAuto && it) ? `×${it.buyQty}${unit}` : "";
 
         const title = isAuto ? (it?.name || "（削除された品目）") : (b.text || "");
         const unit = it?.unit || "";
@@ -930,12 +960,16 @@
         return `
           <div class="buyCard" data-buyid="${escapeHtml(b.id)}">
             <div class="buyLeft">
-              <div class="buyTitle" style="${b.done ? "text-decoration:line-through; opacity:.7" : ""}">${escapeHtml(title)}</div>
-              <div class="buySub">
-                <span class="tag">${isAuto ? "自動（在庫連動）" : "手動"}</span>
-                ${b.done ? `<span class="tag ok">完了</span>` : `<span class="tag warn">未購入</span>`}
-                ${info.map(p=>`<span class="tag">${escapeHtml(p)}</span>`).join("")}
-              </div>
+              <div class="buyTitle" style="${b.done ? "text-decoration:line-through; opacity:.7" : ""}">
+  <span class="buyName" title="${escapeHtml(nameText)}">${escapeHtml(nameText)}</span>
+  <span class="buyQtyChip">${escapeHtml(qtyText)}</span>
+</div>
+
+<div class="buySub">
+  <span class="tag">${isAuto ? "自動（在庫連動）" : "手動"}</span>
+  ${b.done ? `<span class="tag ok">完了</span>` : `<span class="tag warn">未購入</span>`}
+  ${info.map(p=>`<span class="tag">${escapeHtml(p)}</span>`).join("")}
+</div>
             </div>
 
             <div class="buyActions">
