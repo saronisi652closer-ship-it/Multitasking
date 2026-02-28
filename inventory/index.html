@@ -467,6 +467,47 @@
   margin-top:6px;
   width:100%;
 }
+    /* ===== Purchase mode: Mobile layout fix ===== */
+@media (max-width: 520px){
+  /* カードを縦積みにする（左→右 ではなく 上→下） */
+  #purchaseList .buyCard{
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* 右側（操作群）の固定幅を解除して100%に */
+  #purchaseList .buyActions{
+    min-width: 0 !important;
+    width: 100%;
+    align-items: stretch;
+  }
+
+  /* 1段目（目安分反映 / +1）は2分割で綺麗に */
+  #purchaseList .buyActions .quickRow{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    width: 100%;
+  }
+
+  /* 2段目（入力 + 反映）も2列 */
+  #purchaseList .buyActions .qtyInputRow{
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    width: 100%;
+  }
+
+  /* 削除は下でフル幅 */
+  #purchaseList .buyActions button.danger{
+    width: 100%;
+  }
+
+  /* 品名が潰れないように：省略はしつつ幅確保 */
+  #purchaseList .buyName{
+    max-width: 100%;
+  }
+}
   </style>
 </head>
 
