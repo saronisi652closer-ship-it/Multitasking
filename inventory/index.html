@@ -490,20 +490,32 @@
     align-items: stretch;
   }
 
-  /* 1段目（目安分反映 / +1）は2分割で綺麗に */
+  /* 1段目（目安分反映 / +1）→ 目安分反映を大きくする */
   #purchaseList .buyActions .quickRow{
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.6fr 1fr; /* ←ここが重要 */
     gap: 8px;
     width: 100%;
   }
 
-  /* 2段目（入力 + 反映）も2列 */
+  /* 2段目（入力 + 反映）→ 入力を2桁幅、反映も同じ幅 */
   #purchaseList .buyActions .qtyInputRow{
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 70px 70px; /* ←ここが重要 */
     gap: 8px;
     width: 100%;
+    justify-content: start;
+  }
+
+  /* 念押し（gridでも幅固定が効くように） */
+  #purchaseList .buyActions .qtyInputRow input{
+    width: 70px;
+    justify-self: start;
+  }
+  #purchaseList .buyActions .qtyInputRow .btn{
+    width: 70px;
+    justify-self: start;
+  }
   }
 
   /* 削除は下でフル幅 */
