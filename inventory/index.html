@@ -597,6 +597,48 @@ body.compact #purchaseList .buyQtyChip{
   padding: 10px 6px;
   font-size: 13px;
 }
+    /* ===== 購入モード：操作ボタンを小さくして1行にまとめる（スマホ） ===== */
+@media (max-width: 520px){
+  /* 右側の操作エリアを1行グリッド化 */
+  #purchaseList .buyActions{
+    display: grid;
+    grid-template-columns: 1.35fr .65fr 52px 52px 64px; /* 目安 / +1 / 入力 / 反映 / 削除 */
+    gap: 6px;
+    align-items: center;
+  }
+
+  /* 2段の入れ物を“消して中身だけ”をグリッドに並べる */
+  #purchaseList .buyActions .quickRow,
+  #purchaseList .buyActions .qtyInputRow{
+    display: contents;
+  }
+
+  /* ボタンを小さく */
+  #purchaseList .buyActions .btn{
+    height: 34px;
+    padding: 0 8px;
+    font-size: 12px;
+    border-radius: 10px;
+    white-space: nowrap;
+  }
+
+  /* 入力（2桁想定）を小さく固定 */
+  #purchaseList .buyActions input[data-pfield="n"]{
+    width: 52px;
+    height: 34px;
+    padding: 0;
+    text-align: center;
+    font-weight: 900;
+    border-radius: 10px;
+  }
+
+  /* 削除ボタンも小さくして最後の枠に */
+  #purchaseList .buyActions button.danger{
+    width: 64px;
+    padding: 0 6px;
+    justify-self: end;
+  }
+}
   </style>
 </head>
 
