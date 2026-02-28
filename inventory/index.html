@@ -538,7 +538,7 @@
     <section class="split">
       <section class="card">
         <h2>品目追加 / 編集</h2>
-        <div class="sub">在庫数が「購入ライン以下」になったら購入リストへ自動反映</div>
+        <div class="sub">在庫数が「ライン以下」になったら買い物リストへ自動反映</div>
 
         <form class="form" id="formItem">
           <input class="full" id="id" type="hidden" />
@@ -569,13 +569,13 @@
           </div>
 
           <div>
-            <label class="mini">購入ライン（この数以下で購入対象）</label>
+            <label class="mini">ライン（この数以下で購入対象）</label>
             <input id="reorder" type="number" step="1" min="0" value="0" required />
           </div>
 
           <!-- ★復活：購入目安（buyQty）は購入モードの「×数量」「目安反映」に必要 -->
           <div>
-            <label class="mini">購入目安（購入対象時に推奨）</label>
+            <label class="mini">目安（対象時に推奨）</label>
             <input id="buyQty" type="number" step="1" min="1" value="1" required />
           </div>
 
@@ -597,7 +597,7 @@
 
       <section class="card">
         <h2>買い物リスト</h2>
-        <div class="sub">自動：購入ライン以下／手動：ついで買いメモ</div>
+        <div class="sub">自動：ライン以下／手動：ついで買いメモ</div>
 
         <div class="toolbar">
           <button class="btn" id="btnCopy">未購入をコピー</button>
