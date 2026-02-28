@@ -248,7 +248,6 @@
       flex-wrap:wrap;
     }
 
-    /* ←これが抜けてた（崩れてた） */
     .checkBtn{
       width:100%;
       padding:12px 14px;
@@ -306,63 +305,6 @@
     .compact .categoryBadge,
     .compact .targetBadge { display:none !important; }
 
-    .compact .itemCard{
-      padding:12px !important;
-      gap:10px !important;
-    }
-
-    .compact .itemHeader{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-    }
-
-    .compact .itemName{
-      font-size:18px !important;
-      font-weight:700;
-      line-height:1.2;
-    }
-
-    .compact .miniRow{
-      display:flex;
-      align-items:center;
-      gap:8px;
-      flex-wrap:wrap;
-    }
-
-    .miniChip{
-      height:var(--chipH);
-      padding:0 10px;
-      border-radius:999px;
-      font-size:12px;
-      display:inline-flex;
-      align-items:center;
-      border:1px solid rgba(255,255,255,.12);
-      opacity:.92;
-    }
-
-    .compact .qtyBox{
-      min-width:92px;
-      height:40px;
-      font-size:18px;
-      border-radius:12px;
-    }
-
-    .compact .btn{
-      height:40px;
-      padding:0 12px;
-      border-radius:12px;
-    }
-
-    .compact .actionsRow{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
-
-    .compact .actionsRow .btnDanger{ margin-left:auto; }
-
     /* 画面幅が狭い時は自動でスリム */
     @media (max-width: 480px){
       body.autoCompact .metaCol,
@@ -386,7 +328,6 @@
       display: none !important;
     }
 
-    /* 購入モードの説明っぽいブロックを消す（カード内の文章類） */
     .compact section.card p,
     .compact .card p,
     .compact section.card .sub,
@@ -394,7 +335,6 @@
       display: none !important;
     }
 
-    /* “未購入/自動/手動” のチップ列を消す（ありがちなclass名をまとめて潰す） */
     .compact .pills,
     .compact .pillRow,
     .compact .chips,
@@ -404,7 +344,6 @@
       display: none !important;
     }
 
-    /* 左の縦バッジ列を消す（ありがちなclass名をまとめて潰す） */
     .compact .badges,
     .compact .badgeCol,
     .compact .badgeColumn,
@@ -414,96 +353,23 @@
     }
 
     /* ★修正：ドット抜けを修正 */
-    .quickRow{
-      width:100%;
-    }
-
-    /* 2段目（入力 + 反映） */
-    #purchaseList .buyActions .qtyInputRow{
-      width:100%;
-      margin-top:4px;
-    }
-
-    /* 削除ボタンを一番下＆横幅100% */
-    #purchaseList .buyActions button.danger{
-      margin-top:6px;
-      width:100%;
-    }
-
-    /* ===== Purchase mode: Mobile layout fix ===== */
-    @media (max-width: 520px){
-      /* カードを縦積みにする（左→右 ではなく 上→下） */
-      #purchaseList .buyCard{
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      /* 右側（操作群）を100%に */
-      #purchaseList .buyActions{
-        min-width: 0 !important;
-        width: 100%;
-        align-items: stretch;
-      }
-
-      /* 1段目（目安分反映 / +1）→ 目安分反映を大きく */
-      #purchaseList .buyActions .quickRow{
-        display: grid;
-        grid-template-columns: 1.6fr 1fr;
-        gap: 8px;
-        width: 100%;
-      }
-
-      /* 2段目（入力 + 反映）→ 2桁幅固定 */
-      #purchaseList .buyActions .qtyInputRow{
-        display: grid;
-        grid-template-columns: 70px 70px;
-        gap: 8px;
-        width: 100%;
-        justify-content: start;
-      }
-
-      #purchaseList .buyActions .qtyInputRow input{
-        width: 70px;
-        justify-self: start;
-      }
-
-      #purchaseList .buyActions .qtyInputRow .btn{
-        width: 70px;
-        justify-self: start;
-      }
-
-      /* 削除は下でフル幅 */
-      #purchaseList .buyActions button.danger{
-        width: 100%;
-      }
-
-      /* 品名が潰れないように */
-      #purchaseList .buyName{
-        max-width: 100%;
-      }
-    }
+    .quickRow{ width:100%; }
 
     /* ===== スリム時：購入モードの各アイテムは「1行目だけ」 ===== */
     body.compact #purchaseList .buySub,
     body.compact #purchaseList .buyActions{
       display: none !important;
     }
-
-    /* 余白だけ整える（任意） */
     body.compact #purchaseList .buyCard{
       padding: 12px !important;
-      align-items: center; /* 1行だけなので中央揃え */
+      align-items: center;
     }
-
-    /* 1行目を横並び（品名 + ×数量） */
     body.compact #purchaseList .buyTitle{
       display:flex !important;
       align-items:center;
       justify-content:space-between;
       gap:10px;
     }
-
-    /* 品名は省略表示 */
     body.compact #purchaseList .buyName{
       min-width:0;
       overflow:hidden;
@@ -511,68 +377,27 @@
       white-space:nowrap;
     }
 
-    /* ===== 購入モード：ボタンサイズ調整 ===== */
-
-    /* 目安分反映ボタンを強調（大きく） */
-    #purchaseList .quickRow .btn.ok{
-      flex: 1.6;              /* +1より大きく */
-      font-size: 14px;
-      padding: 12px 10px;
-    }
-
-    /* +1ボタンは少し小さめ */
-    #purchaseList .quickRow .btn.secondary{
-      flex: 1;
-    }
-
-    /* 手入力エリア */
-    #purchaseList .qtyInputRow{
-      display:flex;
-      align-items:center;
-      gap:8px;
-    }
-
-    /* 手入力枠を狭く（2桁想定） */
-    #purchaseList .qtyInputRow input{
-      width: 70px;            /* ←ここで幅調整 */
-      flex: 0 0 auto;
-      text-align:center;
-      font-weight:700;
-    }
-
-    /* 反映ボタンをコンパクト化 */
-    #purchaseList .qtyInputRow .btn{
-      width: 70px;            /* 入力枠と揃える */
-      flex: 0 0 auto;
-      padding: 10px 6px;
-      font-size: 13px;
-    }
-
-    /* ========= Purchase mode / Mobile : 最終上書き ========= */
+    /* ========= Purchase mode / Mobile : 1行グリッド ========= */
     @media (max-width:520px){
 
-      /* カードは縦積み */
       #purchaseList .buyCard{
         flex-direction: column;
         align-items: stretch;
       }
 
-      /* 操作部を1行グリッド */
       #purchaseList .buyActions{
         width:100%;
         display:grid !important;
-        grid-template-columns: 110px 48px 52px 52px 68px; /* 目安 / +1 / 入力 / 反映 / 削除 */
+        grid-template-columns: 100px 48px 52px 60px 72px; /* 目安 / +1 / 入力 / 反映 / 削除 */
         gap:8px;
         align-items:center;
       }
 
-      /* quickRow / qtyInputRow を“解体”して中身だけ並べる */
       #purchaseList .buyActions .quickRow,
       #purchaseList .buyActions .qtyInputRow{
         display:contents !important;
       }
 
-      /* ボタン共通 */
       #purchaseList .buyActions .btn{
         height:32px !important;
         padding:0 8px !important;
@@ -585,7 +410,12 @@
         line-height:32px !important;
       }
 
-      /* 入力（2桁想定） */
+      /* 目安ボタンだけ少し低く */
+      #purchaseList .buyActions button[data-pact="applySuggested"]{
+        height:30px !important;
+        font-size:12px !important;
+      }
+
       #purchaseList .buyActions input[data-pfield="n"]{
         width:52px !important;
         height:32px !important;
@@ -596,15 +426,15 @@
         line-height:32px !important;
       }
 
-      /* 削除（ズレ防止で幅固定） */
+      #purchaseList .buyActions button[data-pact="applyN"]{
+        width:60px !important;
+      }
+
       #purchaseList .buyActions button.danger{
-        width:68px !important;
+        width:72px !important;
         padding:0 6px !important;
       }
 
-      /* ★修正：text-indent/::afterハックは削除（HTML側で「目安」表示にする） */
-
-      /* もし下に謎の行が残るなら、buyActions直下のテキスト用っぽいものを全消し */
       #purchaseList .buyActions br,
       #purchaseList .buyActions small,
       #purchaseList .buyActions .hint,
@@ -612,38 +442,9 @@
       #purchaseList .buyActions .muted{
         display:none !important;
       }
+
+      #purchaseList .buyName{ max-width:100%; }
     }
-    /* ===== 最終微調整 ===== */
-@media (max-width:520px){
-
-  /* 操作グリッド幅を少し広げて重なり防止 */
-  #purchaseList .buyActions{
-    grid-template-columns: 100px 48px 52px 60px 72px; 
-    /* 目安 / +1 / 入力 / 反映 / 削除 */
-  }
-
-  /* 目安ボタン少しだけ高さ縮小 */
-  #purchaseList .buyActions button[data-pact="applySuggested"]{
-    height:30px !important;
-    font-size:12px !important;
-  }
-
-  /* 反映ボタンをほんの少し余裕持たせる */
-  #purchaseList .buyActions button[data-pact="applyN"]{
-    width:60px !important;
-  }
-
-  /* 削除ボタンの重なり完全防止 */
-  #purchaseList .buyActions button.danger{
-    width:72px !important;
-  }
-
-  /* 入力ボックスを中央寄せ */
-  #purchaseList .buyActions input[data-pfield="n"]{
-    width:52px !important;
-    text-align:center;
-  }
-}
   </style>
 </head>
 
@@ -654,7 +455,6 @@
       <div class="pill" id="clock">--:--</div>
     </div>
 
-    <!-- “通知っぽい”バナー -->
     <div class="noticebar" id="noticebar">
       <div>
         購入対象が <span id="noticeCount">0</span> 件あります
@@ -748,6 +548,7 @@
             <input id="reorder" type="number" step="1" min="0" value="0" required />
           </div>
 
+          <!-- ★復活：購入目安（buyQty）は購入モードの「×数量」「目安反映」に必要 -->
           <div>
             <label class="mini">購入目安（購入対象時に推奨）</label>
             <input id="buyQty" type="number" step="1" min="1" value="1" required />
@@ -797,7 +598,6 @@
     </section>
   </main>
 
-  <!-- Purchase Mode View -->
   <main class="grid" id="viewBuy" style="display:none;">
     <section class="card">
       <h2>購入モード</h2>
@@ -819,14 +619,13 @@
 
       <div class="toolbar">
         <div class="hint">
-          自動（在庫連動）：<b>「目安分を反映」</b>または<b>「買った数を反映」</b>で在庫に加算 → ライン超えたら自動でリストから消えます。<br>
+          自動（在庫連動）：<b>「目安」</b>または<b>「反映」</b>で在庫に加算 → ライン超えたら自動でリストから消えます。<br>
           手動（メモ）：チェックのみ。
         </div>
       </div>
     </section>
   </main>
 
-  <!-- Share / Backup Dialog -->
   <div class="dialog" id="dialog">
     <div class="modal">
       <header>
@@ -1146,7 +945,7 @@
             <div class="buyActions">
               ${isAuto && it ? `
                 <div class="quickRow">
-                  <!-- ★修正：表示文字をHTML側で「目安」にする（空ボタン防止） -->
+                  <!-- ★修正：表示文字をHTML側で「目安」にする -->
                   <button class="btn small ok" data-pact="applySuggested" title="目安分反映">目安</button>
                   <button class="btn small secondary" data-pact="apply1">+1</button>
                 </div>
@@ -1625,4 +1424,4 @@
     })();
   </script>
 </body>
-</html>
+  </html>
