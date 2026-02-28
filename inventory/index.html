@@ -522,6 +522,22 @@
     body.compact #purchaseList .buySub{
   display:none !important;
     }
+    /* ===== スリム時：購入モードは1行目だけ表示 ===== */
+
+/* 左側：2行目（タグ情報）を消す */
+body.compact #purchaseList .buySub{
+  display:none !important;
+}
+
+/* 右側：操作ボタン群を全部消す */
+body.compact #purchaseList .buyActions{
+  display:none !important;
+}
+
+/* カード余白をスッキリさせる */
+body.compact #purchaseList .buyCard{
+  padding:12px 12px !important;
+}
   </style>
 </head>
 
