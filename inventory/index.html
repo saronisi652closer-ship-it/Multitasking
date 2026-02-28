@@ -367,6 +367,46 @@
   body.autoCompact .categoryBadge,
   body.autoCompact .targetBadge { display:none !important; }
         }
+/* ===== Slim mode (force) ===== */
+.compact .sub,
+.compact .noticebar,
+.compact .hint,
+.compact .help,
+.compact .desc,
+.compact .kpi,
+.compact .footer,
+.compact .foot,
+.compact small {
+  display: none !important;
+}
+
+/* 購入モードの説明っぽいブロックを消す（カード内の文章類） */
+.compact section.card p,
+.compact .card p,
+.compact section.card .sub,
+.compact .card .sub {
+  display: none !important;
+}
+
+/* “未購入/自動/手動” のチップ列を消す（ありがちなclass名をまとめて潰す） */
+.compact .pills,
+.compact .pillRow,
+.compact .chips,
+.compact .chipRow,
+.compact .filters,
+.compact .segRow {
+  display: none !important;
+}
+
+/* 左の縦バッジ列を消す（ありがちなclass名をまとめて潰す） */
+.compact .badges,
+.compact .badgeCol,
+.compact .badgeColumn,
+.compact .leftBadges,
+.compact .meta,
+.compact .metaCol {
+  display: none !important;
+}
   </style>
 </head>
 <body>
