@@ -613,6 +613,37 @@
         display:none !important;
       }
     }
+    /* ===== 最終微調整 ===== */
+@media (max-width:520px){
+
+  /* 操作グリッド幅を少し広げて重なり防止 */
+  #purchaseList .buyActions{
+    grid-template-columns: 100px 48px 52px 60px 72px; 
+    /* 目安 / +1 / 入力 / 反映 / 削除 */
+  }
+
+  /* 目安ボタン少しだけ高さ縮小 */
+  #purchaseList .buyActions button[data-pact="applySuggested"]{
+    height:30px !important;
+    font-size:12px !important;
+  }
+
+  /* 反映ボタンをほんの少し余裕持たせる */
+  #purchaseList .buyActions button[data-pact="applyN"]{
+    width:60px !important;
+  }
+
+  /* 削除ボタンの重なり完全防止 */
+  #purchaseList .buyActions button.danger{
+    width:72px !important;
+  }
+
+  /* 入力ボックスを中央寄せ */
+  #purchaseList .buyActions input[data-pfield="n"]{
+    width:52px !important;
+    text-align:center;
+  }
+}
   </style>
 </head>
 
