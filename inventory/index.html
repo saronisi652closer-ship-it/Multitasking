@@ -411,7 +411,7 @@
     /* 1行目：品名（左）＋購入数（右）を横1行に固定 */
 #purchaseList .buyTitle{
 
-/* ===== Purchase mode title row (FINAL) ===== */
+/* ===== Purchase mode: 1行目=品名 + 購入数 / 2行目=詳細（スリムで消す） ===== */
 #purchaseList .buyTitle{
   display:flex;
   align-items:center;
@@ -419,8 +419,6 @@
   gap:10px;
   font-weight:1100;
   font-size:16px;
-
-  /* 1行固定：品名は省略、購入数は右 */
   white-space:nowrap;
 }
 
@@ -442,11 +440,15 @@
   background: rgba(255,255,255,.06);
 }
 
-/* スリム時は2行目（詳細情報）を消す。でも品名は消さない */
-.compact #purchaseList .buySub{ display:none !important; }
+/* スリム時：2行目のタグ情報は消す（でも品名は残す） */
+.compact #purchaseList .buySub{
+  display:none !important;
+}
 
-/* 手動メモは購入数が無いのでチップを非表示 */
-#purchaseList .buyCard.manual .buyQtyChip{ display:none !important; }    
+/* 手動は購入数チップ不要 */
+#purchaseList .buyCard.manual .buyQtyChip{
+  display:none !important;
+}    
   </style>
 </head>
 
