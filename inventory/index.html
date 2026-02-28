@@ -475,7 +475,7 @@
   margin-top:6px;
   width:100%;
 }
-    /* ===== Purchase mode: Mobile layout fix ===== */
+/* ===== Purchase mode: Mobile layout fix ===== */
 @media (max-width: 520px){
   /* カードを縦積みにする（左→右 ではなく 上→下） */
   #purchaseList .buyCard{
@@ -483,39 +483,38 @@
     align-items: stretch;
   }
 
-  /* 右側（操作群）の固定幅を解除して100%に */
+  /* 右側（操作群）を100%に */
   #purchaseList .buyActions{
     min-width: 0 !important;
     width: 100%;
     align-items: stretch;
   }
 
-  /* 1段目（目安分反映 / +1）→ 目安分反映を大きくする */
+  /* 1段目（目安分反映 / +1）→ 目安分反映を大きく */
   #purchaseList .buyActions .quickRow{
     display: grid;
-    grid-template-columns: 1.6fr 1fr; /* ←ここが重要 */
+    grid-template-columns: 1.6fr 1fr;
     gap: 8px;
     width: 100%;
   }
 
-  /* 2段目（入力 + 反映）→ 入力を2桁幅、反映も同じ幅 */
+  /* 2段目（入力 + 反映）→ 2桁幅固定 */
   #purchaseList .buyActions .qtyInputRow{
     display: grid;
-    grid-template-columns: 70px 70px; /* ←ここが重要 */
+    grid-template-columns: 70px 70px;
     gap: 8px;
     width: 100%;
     justify-content: start;
   }
 
-  /* 念押し（gridでも幅固定が効くように） */
   #purchaseList .buyActions .qtyInputRow input{
     width: 70px;
     justify-self: start;
   }
+
   #purchaseList .buyActions .qtyInputRow .btn{
     width: 70px;
     justify-self: start;
-  }
   }
 
   /* 削除は下でフル幅 */
@@ -523,7 +522,7 @@
     width: 100%;
   }
 
-  /* 品名が潰れないように：省略はしつつ幅確保 */
+  /* 品名が潰れないように */
   #purchaseList .buyName{
     max-width: 100%;
   }
