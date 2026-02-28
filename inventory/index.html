@@ -471,7 +471,43 @@
 
 /* スリム時は2行目（buySub）を消す＝購入数だけ残る */
 .compact #purchaseList .buySub{ display:none !important; }
-    
+
+/* ===== Purchase mode title row (FINAL) ===== */
+#purchaseList .buyTitle{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-weight:1100;
+  font-size:16px;
+
+  /* 1行固定：品名は省略、購入数は右 */
+  white-space:nowrap;
+}
+
+#purchaseList .buyName{
+  flex:1 1 auto;
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+#purchaseList .buyQtyChip{
+  flex:0 0 auto;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:1000;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.06);
+}
+
+/* スリム時は2行目（詳細情報）を消す。でも品名は消さない */
+.compact #purchaseList .buySub{ display:none !important; }
+
+/* 手動メモは購入数が無いのでチップを非表示 */
+#purchaseList .buyCard.manual .buyQtyChip{ display:none !important; }    
   </style>
 </head>
 
