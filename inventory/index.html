@@ -666,38 +666,33 @@ body.compact #purchaseList .buyQtyChip{
     height:34px;
     padding:0;
     text-align:center;
-  }
-
-  #purchaseList .buyActions button.danger{
-    width:60px;
-  }
-}
-    /* ===== 購入モード：1行レイアウト微調整 + ボタン小型化 + 文言短縮 ===== */
+/* ===== Purchase mode: スマホは操作を1行に + ボタン小型化 + 文言短縮 ===== */
 @media (max-width:520px){
 
-  /* 右側操作を1行グリッド（余裕ある列幅に） */
+  /* 右側操作を1行グリッド化 */
   #purchaseList .buyActions{
     display:grid !important;
     grid-template-columns: 110px 48px 52px 52px 68px; /* 目安 / +1 / 入力 / 反映 / 削除 */
     gap:8px !important;
     align-items:center !important;
-    justify-content:start !important;
   }
 
-  /* 2段の入れ物を消して中身だけ並べる */
+  /* 2段の入れ物を“解体”して中身だけ並べる */
   #purchaseList .buyActions .quickRow,
   #purchaseList .buyActions .qtyInputRow{
     display:contents !important;
   }
 
-  /* ボタンを小さく統一 */
+  /* ボタンを小さく統一（ズレ防止に中央寄せ） */
   #purchaseList .buyActions .btn{
     height:32px !important;
     padding:0 8px !important;
     font-size:12px !important;
     border-radius:10px !important;
     white-space:nowrap !important;
-    line-height:32px !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
   }
 
   /* 入力を小さく固定 */
@@ -710,26 +705,24 @@ body.compact #purchaseList .buyQtyChip{
     border-radius:10px !important;
   }
 
-  /* 削除ボタンをズレさせない：幅固定＆中央寄せ */
+  /* 削除ボタン（幅固定＋中央寄せでズレ止め） */
   #purchaseList .buyActions button.danger{
     width:68px !important;
-    justify-self:stretch !important;
+    padding:0 6px !important;
   }
 
-  /* 「目安分反映」を短く（中身の文字を消して、beforeだけ表示） */
-@media (max-width:520px){
+  /* 「目安分反映」→ 文字を消して「目安」だけ表示 */
   #purchaseList button[data-pact="applySuggested"]{
-    font-size:0 !important;      /* 文字は消す */
+    font-size:0 !important;     /* 元の文字を消す（"目安分反映" を見せない） */
     padding:0 8px !important;
-    position:relative !important;
   }
   #purchaseList button[data-pact="applySuggested"]::before{
-    content:"目安" !important;   /* 表示したい短縮名 */
+    content:"目安" !important;  /* 表示したい短縮名 */
     font-size:12px !important;
-    line-height:32px !important;
-    display:block !important;
-    text-align:center !important;
+    line-height:32px !important; /* ボタン高さに合わせる */
     width:100% !important;
+    text-align:center !important;
+    display:block !important;
   }
 }
   </style>
