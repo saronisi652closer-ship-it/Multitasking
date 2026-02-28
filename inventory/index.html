@@ -448,12 +448,13 @@
 /* 手動は購入数チップ不要 */
 #purchaseList .buyCard.manual .buyQtyChip{
   display:none !important;
-} 
-  /* 購入モード：右側ボタン群を「1段ずつ」きれいに下へ */
+}
+
+/* 購入モード：右側ボタン群を縦に固定（1段ずつ下へ） */
 #purchaseList .buyActions{
   display:flex;
   flex-direction:column;
-  gap:10px;          /* 段の間隔 */
+  gap:10px;
   align-items:stretch;
 }
 
@@ -462,28 +463,15 @@
   width:100%;
 }
 
-/* 2段目（入力 + 反映）を1段下に固定 */
+/* 2段目（入力 + 反映）を1段下に見せる */
 #purchaseList .buyActions .qtyInputRow{
   width:100%;
-  margin-top:4px;    /* “1段下にずれた感” */
-}
-
-/* 3段目（削除）をさらに下へ */
-#purchaseList .buyActions > .btn.danger{
-  margin-top:6px;
-  width:100%;
-}
-  /* 購入モード：右側を縦並びに固定 */
-#purchaseList .buyActions{
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  align-items:stretch;
-}
-
-/* 削除ボタンは一番下 */
-#purchaseList .buyActions .btn.danger{
   margin-top:4px;
+}
+
+/* 削除ボタンを一番下に */
+#purchaseList .buyActions button.danger{
+  margin-top:6px;
   width:100%;
 }
   </style>
