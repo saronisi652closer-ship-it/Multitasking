@@ -516,28 +516,40 @@
     max-width: 100%;
   }
 }
-    body.compact #purchaseList .buySub{
-  display:none !important;
-    }
-    body.compact #purchaseList .buySub{
-  display:none !important;
-    }
-    /* ===== スリム時：購入モードは1行目だけ表示 ===== */
-
-/* 左側：2行目（タグ情報）を消す */
-body.compact #purchaseList .buySub{
-  display:none !important;
-}
-
-/* 右側：操作ボタン群を全部消す */
+  /* ===== スリム時：購入モードの各アイテムは「1行目だけ」 ===== */
+body.compact #purchaseList .buySub,
 body.compact #purchaseList .buyActions{
-  display:none !important;
+  display: none !important;
 }
 
-/* カード余白をスッキリさせる */
+/* 余白だけ整える（任意） */
 body.compact #purchaseList .buyCard{
-  padding:12px 12px !important;
+  padding: 12px !important;
+  align-items: center; /* 1行だけなので中央揃え */
 }
+
+/* 1行目を横並び（品名 + ×数量） */
+body.compact #purchaseList .buyTitle{
+  display:flex !important;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+/* 品名は省略表示 */
+body.compact #purchaseList .buyName{
+  min-width:0;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+/* もし「×5kg」も消したいならコメント外す */
+/*
+body.compact #purchaseList .buyQtyChip{
+  display:none !important;
+}
+*/
   </style>
 </head>
 
