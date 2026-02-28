@@ -550,6 +550,42 @@ body.compact #purchaseList .buyQtyChip{
   display:none !important;
 }
 */
+    /* ===== 購入モード：ボタンサイズ調整 ===== */
+
+/* 目安分反映ボタンを強調（大きく） */
+#purchaseList .quickRow .btn.ok{
+  flex: 1.6;              /* +1より大きく */
+  font-size: 14px;
+  padding: 12px 10px;
+}
+
+/* +1ボタンは少し小さめ */
+#purchaseList .quickRow .btn.secondary{
+  flex: 1;
+}
+
+/* 手入力エリア */
+#purchaseList .qtyInputRow{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* 手入力枠を狭く（2桁想定） */
+#purchaseList .qtyInputRow input{
+  width: 70px;            /* ←ここで幅調整 */
+  flex: 0 0 auto;
+  text-align:center;
+  font-weight:700;
+}
+
+/* 反映ボタンをコンパクト化 */
+#purchaseList .qtyInputRow .btn{
+  width: 70px;            /* 入力枠と揃える */
+  flex: 0 0 auto;
+  padding: 10px 6px;
+  font-size: 13px;
+}
   </style>
 </head>
 
