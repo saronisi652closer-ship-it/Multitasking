@@ -372,7 +372,7 @@
     /* ★修正：ドット抜けを修正 */
     .quickRow{ width:100%; }
 
-    /* ===== スリム時：購入モードの各アイテムは「1行目だけ」 ===== */
+    /* ===== スリム時：買い物リストの各アイテムは「1行目だけ」 ===== */
     body.compact #purchaseList .buySub,
     body.compact #purchaseList .buyActions{
       display: none !important;
@@ -482,15 +482,15 @@
 
     <div class="noticebar" id="noticebar">
       <div>
-        購入対象が <span id="noticeCount">0</span> 件あります
-        <small>（タップで購入モードへ）</small>
+        買い物対象が <span id="noticeCount">0</span> 件あります
+        <small>（タップで買い物リストへ）</small>
       </div>
       <button class="btn small secondary" id="noticeDismiss">閉じる</button>
     </div>
 
     <div class="tabs">
       <button class="tabbtn active" id="tabInv">在庫</button>
-      <button class="tabbtn" id="tabBuy">購入モード <span class="badge" id="buyBadge" style="display:none;">0</span></button>
+      <button class="tabbtn" id="tabBuy">買い物リスト <span class="badge" id="buyBadge" style="display:none;">0</span></button>
       <button class="tabbtn" id="btnCompact">スリム</button>
     </div>
   </header>
@@ -498,7 +498,7 @@
   <main class="grid" id="viewInv">
     <section class="card">
       <h2>ダッシュボード</h2>
-      <div class="sub">購入対象 / 期限 / 総品目</div>
+      <div class="sub">買い物対象 / 期限 / 総品目</div>
       <div class="kpi">
         <div class="box">
           <div class="num" id="kpiTotal">0</div>
@@ -506,7 +506,7 @@
         </div>
         <div class="box">
           <div class="num" id="kpiNeedBuy">0</div>
-          <div class="label">購入対象（ライン以下）</div>
+          <div class="label">買い物対象（ライン以下）</div>
         </div>
         <div class="box">
           <div class="num" id="kpiExpire">0</div>
@@ -526,7 +526,7 @@
         <div style="flex:0 1 170px;">
           <select id="filterMode">
             <option value="all">表示：すべて</option>
-            <option value="needbuy">購入対象のみ</option>
+            <option value="needbuy">買い物対象のみ</option>
             <option value="expire">期限が近いのみ</option>
           </select>
         </div>
@@ -596,7 +596,7 @@
       </section>
 
       <section class="card">
-        <h2>購入リスト（自動＋手動）</h2>
+        <h2>買い物リスト</h2>
         <div class="sub">自動：購入ライン以下／手動：ついで買いメモ</div>
 
         <div class="toolbar">
