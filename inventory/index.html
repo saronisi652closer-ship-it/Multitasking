@@ -404,13 +404,6 @@
     .compact .metaCol {
       display: none !important;
     }
-    /* スリム時：購入モードの情報タグ（未購入/現在/ライン/目安/カテゴリ等）を全部消す */
-.compact #purchaseList .buySub { display:none !important; }
-/* 購入モード：品名は必ず全文表示 */
-
-    /* 1行目：品名（左）＋購入数（右）を横1行に固定 */
-#purchaseList .buyTitle{
-
 /* ===== Purchase mode: 1行目=品名 + 購入数 / 2行目=詳細（スリムで消す） ===== */
 #purchaseList .buyTitle{
   display:flex;
@@ -450,7 +443,7 @@
   display:none !important;
 }
 
-/* 購入モード：右側ボタン群を縦に固定（1段ずつ下へ） */
+/* 右側ボタン群を縦に（1段ずつ下へ） */
 #purchaseList .buyActions{
   display:flex;
   flex-direction:column;
@@ -458,18 +451,18 @@
   align-items:stretch;
 }
 
-/* 1段目（目安分反映 +1）は横並びのまま */
+/* 1段目（目安分反映 +1）は横並び */
 #purchaseList .buyActions .quickRow{
   width:100%;
 }
 
-/* 2段目（入力 + 反映）を1段下に見せる */
+/* 2段目（入力 + 反映） */
 #purchaseList .buyActions .qtyInputRow{
   width:100%;
   margin-top:4px;
 }
 
-/* 削除ボタンを一番下に */
+/* 削除ボタンを一番下＆横幅100% */
 #purchaseList .buyActions button.danger{
   margin-top:6px;
   width:100%;
