@@ -932,63 +932,62 @@
 
       // Purchase mode card with "apply bought qty"
       function buyCard(b){
-        const isAuto = b.type === "auto";
-        const it = isAuto ? items.find(x => x.id === b.itemId) : null;
-        const nameText = isAuto ? (it?.name || "（削除された品目）") : (b.text || "");
-const unit = it?.unit || "";
-const qtyText = (isAuto && it) ? `×${it.buyQty}${unit}` : "";
+  const isAuto = b.type === "auto";
+  const it = isAuto ? items.find(x => x.id === b.itemId) : null;
 
-        const title = isAuto ? (it?.name || "（削除された品目）") : (b.text || "");
-        const unit = it?.unit || "";
-        const cat = it?.category || "";
-        const du = it?.expiry ? daysUntil(it.expiry) : null;
+  const nameText = isAuto ? (it?.name || "（削除された品目）") : (b.text || "");
+  const unit = it?.unit || "";
+  const qtyText = (isAuto && it) ? `×${it.buyQty}${unit}` : "";
 
-        const info = [];
-        if(isAuto && it){
-          info.push(`現在:${it.qty}${unit}`);
-          info.push(`ライン≤${it.reorder}${unit}`);
-          info.push(`目安:${it.buyQty}${unit}`);
-          if(cat) info.push(`カテゴリ:${cat}`);
-          if(du !== null){
-            if(du < 0) info.push(`期限切れ`);
-            else info.push(`期限:${du}日`);
-          }
-        }else{
-          info.push("手動メモ");
-        }
+  const cat = it?.category || "";
+  const du = it?.expiry ? daysUntil(it.expiry) : null;
 
-        return `
-          <div class="buyCard" data-buyid="${escapeHtml(b.id)}">
-            <div class="buyLeft">
-              <div class="buyTitle" style="${b.done ? "text-decoration:line-through; opacity:.7" : ""}">
-  <span class="buyName" title="${escapeHtml(nameText)}">${escapeHtml(nameText)}</span>
-  <span class="buyQtyChip">${escapeHtml(qtyText)}</span>
-</div>
+  const info = [];
+  if(isAuto && it){
+    info.push(`現在:${it.qty}${unit}`);
+    info.push(`ライン≤${it.reorder}${unit}`);
+    info.push(`目安:${it.buyQty}${unit}`);
+    if(cat) info.push(`カテゴリ:${cat}`);
+    if(du !== null){
+      if(du < 0) info.push(`期限切れ`);
+      else info.push(`期限:${du}日`);
+    }
+  }else{
+    info.push("手動メモ");
+  }
 
-<div class="buySub">
-  <span class="tag">${isAuto ? "自動（在庫連動）" : "手動"}</span>
-  ${b.done ? `<span class="tag ok">完了</span>` : `<span class="tag warn">未購入</span>`}
-  ${info.map(p=>`<span class="tag">${escapeHtml(p)}</span>`).join("")}
-</div>
-            </div>
+  return `
+    <div class="buyCard ${isAuto ? "auto" : "manual"}" data-buyid="${escapeHtml(b.id)}">
+      <div class="buyLeft">
+        <div class="buyTitle" style="${b.done ? "text-decoration:line-through; opacity:.7" : ""}">
+          <span class="buyName" title="${escapeHtml(nameText)}">${escapeHtml(nameText)}</span>
+          <span class="buyQtyChip">${escapeHtml(qtyText)}</span>
+        </div>
 
-            <div class="buyActions">
-              ${isAuto && it ? `
-                <div class="quickRow">
-                  <button class="btn small ok" data-pact="applySuggested">目安分反映</button>
-                  <button class="btn small secondary" data-pact="apply1">+1</button>
-                </div>
-                <div class="qtyInputRow">
-                  <input type="number" min="1" step="1" value="${it.buyQty}" data-pfield="n" />
-                  <button class="btn small ok" data-pact="applyN">反映</button>
-                </div>
-              ` : `
-                <button class="checkBtn ${b.done ? "done" : ""}" data-pact="toggle">${b.done ? "完了✓" : "チェック"}</button>
-              `}
-              <button class="btn small danger" data-pact="del">削除</button>
-            </div>
+        <div class="buySub">
+          <span class="tag">${isAuto ? "自動（在庫連動）" : "手動"}</span>
+          ${b.done ? `<span class="tag ok">完了</span>` : `<span class="tag warn">未購入</span>`}
+          ${info.map(p=>`<span class="tag">${escapeHtml(p)}</span>`).join("")}
+        </div>
+      </div>
+
+      <div class="buyActions">
+        ${isAuto && it ? `
+          <div class="quickRow">
+            <button class="btn small ok" data-pact="applySuggested">目安分反映</button>
+            <button class="btn small secondary" data-pact="apply1">+1</button>
           </div>
-        `;
+          <div class="qtyInputRow">
+            <input type="number" min="1" step="1" value="${it.buyQty}" data-pfield="n" />
+            <button class="btn small ok" data-pact="applyN">反映</button>
+          </div>
+        ` : `
+          <button class="checkBtn ${b.done ? "done" : ""}" data-pact="toggle">${b.done ? "完了✓" : "チェック"}</button>
+        `}
+        <button class="btn small danger" data-pact="del">削除</button>
+      </div>
+    </div>
+  `;
       }
 
       function renderNotice(){
