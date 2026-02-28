@@ -411,62 +411,6 @@
 
     /* 1行目：品名（左）＋購入数（右）を横1行に固定 */
 #purchaseList .buyTitle{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  font-weight:1100;
-  font-size:16px;
-  white-space:nowrap;
-}
-#purchaseList .buyName{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-#purchaseList .buyQtyChip{
-  flex:0 0 auto;
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:1000;
-  border:1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-  color: var(--text);
-}
-
-/* スリム時：2行目（今までの情報）を全部消す → 購入数だけ残る */
-.compact #purchaseList .buySub{ display:none !important; }
-
-/* 手動メモは購入数がないのでチップ非表示 */
-#purchaseList .buyCard.manual .buyQtyChip{ display:none; }
-/* 1行目：品名 + 購入数 */
-#purchaseList .buyTitle{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px;
-  white-space:nowrap;
-}
-#purchaseList .buyName{
-  min-width:0;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-}
-#purchaseList .buyQtyChip{
-  flex:0 0 auto;
-  padding:6px 10px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:1000;
-  border:1px solid rgba(255,255,255,.12);
-  background: rgba(255,255,255,.06);
-}
-
-/* スリム時は2行目（buySub）を消す＝購入数だけ残る */
-.compact #purchaseList .buySub{ display:none !important; }
 
 /* ===== Purchase mode title row (FINAL) ===== */
 #purchaseList .buyTitle{
