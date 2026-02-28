@@ -1,4 +1,4 @@
-<!doctype html>
+な<!doctype html>
 <html lang="ja">
 <head>
   <meta charset="utf-8" />
@@ -448,7 +448,31 @@
 /* 手動は購入数チップ不要 */
 #purchaseList .buyCard.manual .buyQtyChip{
   display:none !important;
-}    
+} 
+  /* 購入モード：右側ボタン群を「1段ずつ」きれいに下へ */
+#purchaseList .buyActions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;          /* 段の間隔 */
+  align-items:stretch;
+}
+
+/* 1段目（目安分反映 +1）は横並びのまま */
+#purchaseList .buyActions .quickRow{
+  width:100%;
+}
+
+/* 2段目（入力 + 反映）を1段下に固定 */
+#purchaseList .buyActions .qtyInputRow{
+  width:100%;
+  margin-top:4px;    /* “1段下にずれた感” */
+}
+
+/* 3段目（削除）をさらに下へ */
+#purchaseList .buyActions > .btn.danger{
+  margin-top:6px;
+  width:100%;
+}
   </style>
 </head>
 
