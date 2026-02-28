@@ -473,6 +473,19 @@
   margin-top:6px;
   width:100%;
 }
+  /* 購入モード：右側を縦並びに固定 */
+#purchaseList .buyActions{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:stretch;
+}
+
+/* 削除ボタンは一番下 */
+#purchaseList .buyActions .btn.danger{
+  margin-top:4px;
+  width:100%;
+}
   </style>
 </head>
 
