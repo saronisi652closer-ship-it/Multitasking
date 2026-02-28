@@ -716,19 +716,21 @@ body.compact #purchaseList .buyQtyChip{
     justify-self:stretch !important;
   }
 
-  /* 「目安分反映」→文字を消して短く（表示はアイコン風） */
+  /* 「目安分反映」を短く（中身の文字を消して、beforeだけ表示） */
+@media (max-width:520px){
   #purchaseList button[data-pact="applySuggested"]{
-    font-size:0 !important;         /* 元の文字を消す */
-    padding:0 !important;
+    font-size:0 !important;      /* 文字は消す */
+    padding:0 8px !important;
+    position:relative !important;
   }
   #purchaseList button[data-pact="applySuggested"]::before{
-    content:"目安" !important;      /* 好きに変更OK：例「推奨」「AUTO」など */
+    content:"目安" !important;   /* 表示したい短縮名 */
     font-size:12px !important;
+    line-height:32px !important;
+    display:block !important;
+    text-align:center !important;
+    width:100% !important;
   }
-
-  /* 反映ボタンも短くしたい場合（任意） */
-  /* #purchaseList button[data-pact="applyN"]{ font-size:0 !important; }
-     #purchaseList button[data-pact="applyN"]::before{ content:"反映"; font-size:12px; } */
 }
   </style>
 </head>
