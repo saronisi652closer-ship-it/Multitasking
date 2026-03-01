@@ -5,27 +5,27 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>在庫＆買い物メモ</title>
 
- <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="manifest" href="./manifest.webmanifest">
 
-<!-- favicon / app icon -->
-<link rel="icon" href="./icons/favicon-32.png" sizes="32x32">
-<link rel="icon" href="./icons/favicon-16.png" sizes="16x16">
-<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
+  <!-- favicon / app icon -->
+  <link rel="icon" href="./icons/favicon-32.png" sizes="32x32">
+  <link rel="icon" href="./icons/favicon-16.png" sizes="16x16">
+  <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png">
 
-<!-- iOS PWA -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="在庫メモ">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <!-- iOS PWA -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="在庫＆買い物メモ">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-<!-- Android/Chrome -->
-<meta name="theme-color" content="#0b0d12">
+  <!-- Android/Chrome -->
+  <meta name="theme-color" content="#0b0d12">
 
-<!-- iOS splash (最低限セット) -->
-<link rel="apple-touch-startup-image" href="./splash/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
-<link rel="apple-touch-startup-image" href="./splash/splash-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
-<link rel="apple-touch-startup-image" href="./splash/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
-<link rel="apple-touch-startup-image" href="./splash/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
-<link rel="apple-touch-startup-image" href="./splash/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
+  <!-- iOS splash (最低限セット) -->
+  <link rel="apple-touch-startup-image" href="./splash/splash-1170x2532.png" media="(device-width: 390px) and (device-height: 844px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/splash-1284x2778.png" media="(device-width: 428px) and (device-height: 926px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
+  <link rel="apple-touch-startup-image" href="./splash/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
 
   <style>
     :root{
@@ -232,7 +232,7 @@
     .hint{font-size:12px; color:var(--muted); margin-top:6px;}
     .footer-actions{padding:12px; border-top:1px solid rgba(255,255,255,.06); display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;}
 
-    /* Purchase Mode */
+    /* Shopping List (旧 Purchase Mode) */
     .purchaseModeTop{
       padding:12px;
       display:flex;
@@ -369,7 +369,6 @@
       display: none !important;
     }
 
-    /* ★修正：ドット抜けを修正 */
     .quickRow{ width:100%; }
 
     /* ===== スリム時：買い物リストの各アイテムは「1行目だけ」 ===== */
@@ -394,7 +393,7 @@
       white-space:nowrap;
     }
 
-    /* ========= Purchase mode / Mobile : 1行グリッド ========= */
+    /* ========= Shopping list / Mobile : 1行グリッド ========= */
     @media (max-width:520px){
 
       #purchaseList .buyCard{
@@ -466,17 +465,18 @@
 </head>
 
 <body>
-<div id="boot" style="
-  position:fixed; inset:0; z-index:9999;
-  display:flex; align-items:center; justify-content:center;
-  background:#0b0d12; color:#e8eef7;
-  font-weight:900; letter-spacing:.04em;
-">
-  在庫＆買い物メモ
-</div>
+  <div id="boot" style="
+    position:fixed; inset:0; z-index:9999;
+    display:flex; align-items:center; justify-content:center;
+    background:#0b0d12; color:#e8eef7;
+    font-weight:900; letter-spacing:.04em;
+  ">
+    在庫＆買い物メモ
+  </div>
+
   <header>
     <div class="topbar">
-     <div class="title">在庫＆買い物メモ</div>
+      <div class="title">在庫＆買い物メモ</div>
       <div class="pill" id="clock">--:--</div>
     </div>
 
@@ -569,13 +569,12 @@
           </div>
 
           <div>
-            <label class="mini">ライン（この数以下で購入対象）</label>
+            <label class="mini">ライン（この数以下で買い物対象）</label>
             <input id="reorder" type="number" step="1" min="0" value="0" required />
           </div>
 
-          <!-- ★復活：購入目安（buyQty）は購入モードの「×数量」「目安反映」に必要 -->
           <div>
-            <label class="mini">目安（対象時に推奨）</label>
+            <label class="mini">買い物目安（買い物対象時に推奨）</label>
             <input id="buyQty" type="number" step="1" min="1" value="1" required />
           </div>
 
@@ -597,7 +596,7 @@
 
       <section class="card">
         <h2>買い物リスト</h2>
-        <div class="sub">自動：ライン以下／手動：ついで買いメモ</div>
+        <div class="sub">自動：ライン以下で追加／手動：ついで買いメモ</div>
 
         <div class="toolbar">
           <button class="btn" id="btnCopy">未購入をコピー</button>
@@ -618,7 +617,7 @@
 
     <section class="card">
       <h2>一覧</h2>
-      <div class="sub">在庫・購入ライン・期限が一気に見えます</div>
+      <div class="sub">在庫・ライン・期限が一気に見えます</div>
       <div class="list" id="list"></div>
     </section>
   </main>
@@ -680,14 +679,15 @@
   </div>
 
   <script>
-　　window.addEventListener("load", () => {
-  const boot = document.getElementById("boot");
-  if (boot) {
-    boot.style.transition = "opacity .25s ease";
-    boot.style.opacity = "0";
-    setTimeout(()=>boot.remove(), 260);
-  }
-});
+    window.addEventListener("load", () => {
+      const boot = document.getElementById("boot");
+      if (boot) {
+        boot.style.transition = "opacity .25s ease";
+        boot.style.opacity = "0";
+        setTimeout(()=>boot.remove(), 260);
+      }
+    });
+
     // Service Worker（PWA）
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () => {
@@ -869,7 +869,7 @@
       function itemBadges(it){
         const du = daysUntil(it.expiry);
         const badges = [];
-        badges.push(needBuy(it) ? `<span class="tag danger">購入対象</span>` : `<span class="tag ok">OK</span>`);
+        badges.push(needBuy(it) ? `<span class="tag danger">買い物対象</span>` : `<span class="tag ok">OK</span>`);
         badges.push(`<span class="tag">ライン ≤ ${it.reorder}${escapeHtml(it.unit||"")}</span>`);
         badges.push(`<span class="tag">目安 ${it.buyQty}${escapeHtml(it.unit||"")}</span>`);
         if(du !== null){
@@ -934,7 +934,7 @@
         `;
       }
 
-      // Purchase mode card with "apply bought qty"
+      // Shopping list card with "apply bought qty"
       function buyCard(b){
         const isAuto = b.type === "auto";
         const it = isAuto ? items.find(x => x.id === b.itemId) : null;
@@ -978,7 +978,6 @@
             <div class="buyActions">
               ${isAuto && it ? `
                 <div class="quickRow">
-                  <!-- ★修正：表示文字をHTML側で「目安」にする -->
                   <button class="btn small ok" data-pact="applySuggested" title="目安分反映">目安</button>
                   <button class="btn small secondary" data-pact="apply1">+1</button>
                 </div>
@@ -1056,9 +1055,9 @@
         const sortedBuy = [...buy].sort((a,b)=> (a.done===b.done)? (b.createdAt-a.createdAt) : (a.done?1:-1));
         buyListEl.innerHTML = sortedBuy.length
           ? sortedBuy.map(buyRow).join("")
-          : `<div style="padding:14px; color:var(--muted);">購入リストは空です。</div>`;
+          : `<div style="padding:14px; color:var(--muted);">買い物リストは空です。</div>`;
 
-        // Purchase mode lists (購入対象を上に)
+        // Shopping list view lists (自動を上に)
         const pmBase = [...sortedBuy].sort((a,b)=>{
           const ta = (a.type==="auto") ? 0 : 1;
           const tb = (b.type==="auto") ? 0 : 1;
@@ -1192,7 +1191,7 @@
 
         const text = lines.join("\n") || "（未購入は空です）";
         navigator.clipboard?.writeText(text).then(()=> {
-          alert("未購入リストをコピーしました。");
+          alert("買い物メモをコピーしました。");
         }).catch(()=> {
           prompt("コピーできない場合は、下の内容を手動でコピーしてください。", text);
         });
@@ -1457,4 +1456,4 @@
     })();
   </script>
 </body>
-  </html>
+</html>
