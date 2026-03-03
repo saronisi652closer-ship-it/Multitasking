@@ -827,43 +827,97 @@
       }
 el("btnScan").addEventListener("click", async () => {
 
-if(!("BarcodeDetector" in window)){
-alert("この端末ではバーコードスキャン非対応です");
-return;
-}
+// ===== Barcode Scan (Overlay camera) =====
+const btnScan = el("btnScan");
+if (btnScan) {
+  btnScan.addEventListener("click", async () => {
+    // BarcodeDetector が無い端末(iOS Safariなど)は非対応
+    if (!("BarcodeDetector" in window)) {
+      alert("この端末/ブラウザはバーコードスキャン非対応です（AndroidのChrome推奨）");
+      return;
+    }
 
-try{
-const detector = new BarcodeDetector({
-formats:["ean_13","ean_8","upc_a","upc_e","code_128"]
-});
+    // overlay作成
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `
+      position:fixed; inset:0; z-index:99999;
+      background:rgba(0,0,0,.72);
+      display:flex; align-items:center; justify-content:center;
+      padding:14px;
+    `;
+    overlay.innerHTML = `
+      <div style="
+        width:min(520px,100%);
+        background:rgba(18,22,34,.96);
+        border:1px solid rgba(255,255,255,.12);
+        border-radius:18px;
+        overflow:hidden;
+      ">
+        <div style="padding:12px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="font-weight:900;">バーコードを映してください</div>
+          <button id="scanClose" class="btn small secondary" type="button">閉じる</button>
+        </div>
+        <div style="padding:12px;">
+          <video id="scanVideo" style="width:100%; border-radius:14px; background:#000;" playsinline></video>
+          <div style="margin-top:8px; color:#9aa4b2; font-size:12px;">
+            ※ピントが合う距離で、バーコード全体が入るように
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(overlay);
 
-const stream = await navigator.mediaDevices.getUserMedia({
-video:{facingMode:"environment"}
-});
+    const closeBtn = overlay.querySelector("#scanClose");
+    const video = overlay.querySelector("#scanVideo");
 
-const video = document.createElement("video");
-video.srcObject = stream;
-video.play();
+    let stream;
+    let timer;
 
-const scan = async () => {
-const codes = await detector.detect(video);
+    const cleanup = () => {
+      if (timer) clearInterval(timer);
+      if (stream) stream.getTracks().forEach(t => t.stop());
+      overlay.remove();
+    };
 
-if(codes.length){
-f.barcode.value = codes[0].rawValue;
-stream.getTracks().forEach(t=>t.stop());
-return;
-}
+    closeBtn.addEventListener("click", cleanup);
 
-requestAnimationFrame(scan);
-};
+    try {
+      // カメラ起動（背面）
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment" }
+      });
 
-scan();
+      // video設定（自動再生制限対策）
+      video.srcObject = stream;
+      video.muted = true;       // 重要：自動再生対策
+      video.autoplay = true;
+      video.playsInline = true;
 
-}catch(e){
-alert("カメラ起動に失敗しました");
-}
+      // 再生開始待ち
+      await video.play();
 
-});
+      const detector = new BarcodeDetector({
+        formats: ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]
+      });
+
+      // 検出ループ（250msごと）
+      timer = setInterval(async () => {
+        try {
+          const codes = await detector.detect(video);
+          if (codes && codes.length) {
+            f.barcode.value = codes[0].rawValue;
+            cleanup();
+            try { navigator.vibrate?.(30); } catch {}
+          }
+        } catch {}
+      }, 250);
+
+    } catch (e) {
+      cleanup();
+      alert("カメラ起動に失敗しました。ブラウザがChromeか、権限が許可されているか確認してください。");
+    }
+  });
+  }
       function load(){
         try{ items = JSON.parse(localStorage.getItem(LS_ITEMS) || "[]"); }catch{ items = []; }
         try{ buy = JSON.parse(localStorage.getItem(LS_BUY) || "[]"); }catch{ buy = []; }
