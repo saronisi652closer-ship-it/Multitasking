@@ -1,3 +1,4 @@
+const BASE = self.location.pathname.replace(/sw\.js$/, "");
 const CACHE_NAME = "inventory-pwa-v4"; // ←更新したら v4,v5… に上げる
 const ASSETS = [
   BASE,
