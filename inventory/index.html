@@ -825,7 +825,45 @@
   if(c.includes("調味") || c.includes("調料")) return "🧂";
   return "📦";
       }
+el("btnScan").addEventListener("click", async () => {
 
+if(!("BarcodeDetector" in window)){
+alert("この端末ではバーコードスキャン非対応です");
+return;
+}
+
+try{
+const detector = new BarcodeDetector({
+formats:["ean_13","ean_8","upc_a","upc_e","code_128"]
+});
+
+const stream = await navigator.mediaDevices.getUserMedia({
+video:{facingMode:"environment"}
+});
+
+const video = document.createElement("video");
+video.srcObject = stream;
+video.play();
+
+const scan = async () => {
+const codes = await detector.detect(video);
+
+if(codes.length){
+f.barcode.value = codes[0].rawValue;
+stream.getTracks().forEach(t=>t.stop());
+return;
+}
+
+requestAnimationFrame(scan);
+};
+
+scan();
+
+}catch(e){
+alert("カメラ起動に失敗しました");
+}
+
+});
       function load(){
         try{ items = JSON.parse(localStorage.getItem(LS_ITEMS) || "[]"); }catch{ items = []; }
         try{ buy = JSON.parse(localStorage.getItem(LS_BUY) || "[]"); }catch{ buy = []; }
