@@ -1,11 +1,11 @@
 const CACHE_NAME = "inventory-pwa-v4"; // ←更新したら v4,v5… に上げる
 const ASSETS = [
-  "/inventory/",
-  "/inventory/index.html",
-  "/inventory/manifest.webmanifest",
-  "/inventory/sw.js",
-  "/inventory/購入.png",
-  "/inventory/購入2.png"
+  BASE,
+  BASE + "index.html",
+  BASE + "manifest.webmanifest",
+  BASE + "sw.js",
+  BASE + "icon-192-purchase.png",
+  BASE + "icon-512-purchase.png"
 ];
 
 self.addEventListener("install", (event) => {
