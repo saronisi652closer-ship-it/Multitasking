@@ -1,4 +1,4 @@
-const CACHE_NAME = "inventory-pwa-v3"; // ←更新したら v4,v5… に上げる
+const CACHE_NAME = "inventory-pwa-v4"; // ←更新したら v4,v5… に上げる
 const ASSETS = [
   "/inventory/",
   "/inventory/index.html",
