@@ -807,6 +807,17 @@
 
       const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
 
+      function catEmoji(cat){
+  const c = (cat||"").toLowerCase();
+  if(c.includes("冷蔵")) return "🧊";
+  if(c.includes("冷凍")) return "❄️";
+  if(c.includes("常温")) return "🏠";
+  if(c.includes("日用") || c.includes("生活")) return "🧻";
+  if(c.includes("飲料") || c.includes("ドリンク")) return "🥤";
+  if(c.includes("調味") || c.includes("調料")) return "🧂";
+  return "📦";
+      }
+
       function load(){
         try{ items = JSON.parse(localStorage.getItem(LS_ITEMS) || "[]"); }catch{ items = []; }
         try{ buy = JSON.parse(localStorage.getItem(LS_BUY) || "[]"); }catch{ buy = []; }
