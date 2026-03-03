@@ -4,8 +4,8 @@ const ASSETS = [
   BASE + "index.html",
   BASE + "manifest.webmanifest",
   BASE + "sw.js",
-  BASE + "icon-192-purchase.png",
-  BASE + "icon-512-purchase.png"
+  BASE + "購入.png",
+  BASE + "購入2.png"
 ];
 
 self.addEventListener("install", (event) => {
