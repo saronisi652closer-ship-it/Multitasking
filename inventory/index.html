@@ -914,7 +914,10 @@
         return `
           <div class="item" data-itemid="${escapeHtml(it.id)}">
             <div>
-              <div class="name">${escapeHtml(it.name)}</div>
+              <div class="nameRow">
+  <span class="catIcon" title="${escapeHtml(it.category||"")}">${escapeHtml(catEmoji(it.category))}</span>
+  <div class="name">${escapeHtml(it.name)}</div>
+</div>
               <div class="meta">
                 ${itemBadges(it)}
                 ${meta}
