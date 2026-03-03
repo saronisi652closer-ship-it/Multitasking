@@ -1,13 +1,13 @@
 {
-  "name": "在庫管理（自動購入リスト）",
+  "name": "在庫＆買い物メモ",
   "short_name": "在庫",
-  "start_url": "/inventory/",
-  "scope": "/inventory/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0b0d12",
   "theme_color": "#0b0d12",
   "icons": [
-    { "src": "/inventory/購入.png", "sizes": "192x192", "type": "image/png" },
-    { "src": "/inventory/購入2.png", "sizes": "512x512", "type": "image/png" }
+    { "src": "./購入-purchase.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "./購入2-purchase.png", "sizes": "512x512", "type": "image/png" }
   ]
 }
