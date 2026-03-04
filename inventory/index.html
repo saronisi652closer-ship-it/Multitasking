@@ -963,6 +963,8 @@ if (btnScan) {
       function load(){
         try{ items = JSON.parse(localStorage.getItem(LS_ITEMS) || "[]"); }catch{ items = []; }
         try{ buy = JSON.parse(localStorage.getItem(LS_BUY) || "[]"); }catch{ buy = []; }
+        loadProductsLocal();        // ← 追加
+  // products.json は非同期なので後で読み込む
         normalize();
         syncAutoBuy();
       }
