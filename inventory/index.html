@@ -1039,6 +1039,7 @@ if (btnScan) {
           id: it.id || uid(),
           name: (it.name ?? "").toString(),
           category: (it.category ?? "").toString(),
+          barcode: (it.barcode ?? "").toString(),
           unit: (it.unit ?? "").toString(),
           expiry: (it.expiry ?? "").toString(),
           qty: Number.isFinite(+it.qty) ? +it.qty : 0,
