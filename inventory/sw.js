@@ -1,10 +1,11 @@
 const BASE = self.location.pathname.replace(/sw\.js$/, "");
-const CACHE_NAME = "inventory-pwa-v4"; // ←更新したら v4,v5… に上げる
+const CACHE_NAME = "inventory-pwa-v5"; // ←更新したら v4,v5… に上げる
 const ASSETS = [
   BASE,
   BASE + "index.html",
   BASE + "manifest.webmanifest",
   BASE + "sw.js",
+  BASE + "products.json",
   BASE + "購入.png",
   BASE + "購入2.png"
 ];
