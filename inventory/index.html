@@ -26,14 +26,10 @@
   <link rel="apple-touch-startup-image" href="./splash/splash-1125x2436.png" media="(device-width: 375px) and (device-height: 812px) and (-webkit-device-pixel-ratio: 3)">
   <link rel="apple-touch-startup-image" href="./splash/splash-1242x2688.png" media="(device-width: 414px) and (device-height: 896px) and (-webkit-device-pixel-ratio: 3)">
   <link rel="apple-touch-startup-image" href="./splash/splash-2048x2732.png" media="(device-width: 1024px) and (device-height: 1366px) and (-webkit-device-pixel-ratio: 2)">
-<meta name="theme-color" content="#0b0d12">
 
-<!-- iOS向け -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="在庫">
-<link rel="apple-touch-icon" href="./購入.png">
-  
+  <!-- iOS向け（重複してても害は少ないけど、整理） -->
+  <meta name="apple-mobile-web-app-title" content="在庫＆買い物メモ">
+
   <style>
     :root{
       --bg:#0b0d12;
@@ -329,7 +325,6 @@
     .compact .categoryBadge,
     .compact .targetBadge { display:none !important; }
 
-    /* 画面幅が狭い時は自動でスリム */
     @media (max-width: 480px){
       body.autoCompact .metaCol,
       body.autoCompact .hint,
@@ -339,7 +334,6 @@
       body.autoCompact .targetBadge { display:none !important; }
     }
 
-    /* ===== Slim mode (force) ===== */
     .compact .sub,
     .compact .noticebar,
     .compact .hint,
@@ -352,33 +346,8 @@
       display: none !important;
     }
 
-    .compact section.card p,
-    .compact .card p,
-    .compact section.card .sub,
-    .compact .card .sub {
-      display: none !important;
-    }
-
-    .compact .pills,
-    .compact .pillRow,
-    .compact .chips,
-    .compact .chipRow,
-    .compact .filters,
-    .compact .segRow {
-      display: none !important;
-    }
-
-    .compact .badges,
-    .compact .badgeCol,
-    .compact .badgeColumn,
-    .compact .leftBadges,
-    .compact .metaCol {
-      display: none !important;
-    }
-
     .quickRow{ width:100%; }
 
-    /* ===== スリム時：買い物リストの各アイテムは「1行目だけ」 ===== */
     body.compact #purchaseList .buySub,
     body.compact #purchaseList .buyActions{
       display: none !important;
@@ -400,7 +369,6 @@
       white-space:nowrap;
     }
 
-    /* ========= Shopping list / Mobile : 1行グリッド ========= */
     @media (max-width:520px){
 
       #purchaseList .buyCard{
@@ -411,7 +379,7 @@
       #purchaseList .buyActions{
         width:100%;
         display:grid !important;
-        grid-template-columns: 100px 48px 52px 60px 72px; /* 目安 / +1 / 入力 / 反映 / 削除 */
+        grid-template-columns: 100px 48px 52px 60px 72px;
         gap:8px;
         align-items:center;
       }
@@ -433,7 +401,6 @@
         line-height:32px !important;
       }
 
-      /* 目安ボタンだけ少し低く */
       #purchaseList .buyActions button[data-pact="applySuggested"]{
         height:30px !important;
         font-size:12px !important;
@@ -468,23 +435,23 @@
 
       #purchaseList .buyName{ max-width:100%; }
     }
-    /* カテゴリのミニアイコン */
-.catIcon{
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  width:22px; height:22px;
-  border-radius:8px;
-  background: rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.10);
-  font-size:13px;
-  margin-right:6px;
-}
-.nameRow{
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
+
+    .catIcon{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:22px; height:22px;
+      border-radius:8px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
+      font-size:13px;
+      margin-right:6px;
+    }
+    .nameRow{
+      display:flex;
+      align-items:center;
+      gap:6px;
+    }
   </style>
 </head>
 
@@ -576,12 +543,13 @@
             <label class="mini">カテゴリ</label>
             <input id="category" placeholder="例：冷蔵庫 / 冷凍庫 / 常温 / 日用品" />
           </div>
+
           <div>
-<label class="mini">バーコード（任意）</label>
-<div class="row" style="gap:8px;">
-<input id="barcode" placeholder="JAN/EANコード" inputmode="numeric" style="flex:1;">
-<button class="btn small secondary" type="button" id="btnScan">スキャン</button>
-</div>
+            <label class="mini">バーコード（任意）</label>
+            <div class="row" style="gap:8px;">
+              <input id="barcode" placeholder="JAN/EANコード" inputmode="numeric" style="flex:1;">
+              <button class="btn small secondary" type="button" id="btnScan">スキャン</button>
+            </div>
           </div>
 
           <div>
@@ -749,7 +717,7 @@
         });
       });
 
-      /** @type {{id:string,name:string,category:string,unit:string,expiry:string,qty:number,reorder:number,buyQty:number,note:string,updatedAt:number}[]} */
+      /** @type {{id:string,name:string,category:string,barcode:string,unit:string,expiry:string,qty:number,reorder:number,buyQty:number,note:string,updatedAt:number}[]} */
       let items = [];
       /**
        * @type {{id:string,type:"auto"|"manual",itemId?:string,text?:string,done:boolean,createdAt:number}[]}
@@ -816,230 +784,214 @@
       const uid = () => Math.random().toString(16).slice(2) + Date.now().toString(16);
 
       function catEmoji(cat){
-  const c = (cat||"").toLowerCase();
-  if(c.includes("冷蔵")) return "🧊";
-  if(c.includes("冷凍")) return "❄️";
-  if(c.includes("常温")) return "🏠";
-  if(c.includes("日用") || c.includes("生活")) return "🧻";
-  if(c.includes("飲料") || c.includes("ドリンク")) return "🥤";
-  if(c.includes("調味") || c.includes("調料")) return "🧂";
-  return "📦";
+        const c = (cat||"").toLowerCase();
+        if(c.includes("冷蔵")) return "🧊";
+        if(c.includes("冷凍")) return "❄️";
+        if(c.includes("常温")) return "🏠";
+        if(c.includes("日用") || c.includes("生活")) return "🧻";
+        if(c.includes("飲料") || c.includes("ドリンク")) return "🥤";
+        if(c.includes("調味") || c.includes("調料")) return "🧂";
+        return "📦";
       }
+
       // ===== Auto Category (④) =====
-const CATEGORY_CANON = [
-  "冷蔵庫",
-  "冷凍庫",
-  "常温",
-  "日用品",
-  "飲料",
-  "調味料",
-  "その他"
-];
+      const CATEGORY_CANON = [
+        "冷蔵庫",
+        "冷凍庫",
+        "常温",
+        "日用品",
+        "飲料",
+        "調味料",
+        "その他"
+      ];
 
-function normalizeCategory(cat){
-  const c = String(cat||"").trim();
-  if(!c) return "";
+      function normalizeCategory(cat){
+        const c = String(cat||"").trim();
+        if(!c) return "";
+        if (/冷蔵|冷ぞう|れいぞう/i.test(c)) return "冷蔵庫";
+        if (/冷凍|冷とう|れいとう/i.test(c)) return "冷凍庫";
+        if (/常温|室温/i.test(c)) return "常温";
+        if (/日用|生活|消耗|衛生|紙/i.test(c)) return "日用品";
+        if (/飲料|ドリンク|水|お茶|茶|コーヒー/i.test(c)) return "飲料";
+        if (/調味|調料|しょうゆ|醤油|みそ|味噌|塩|砂糖|酢|だし/i.test(c)) return "調味料";
+        return c;
+      }
 
-  // 表記ゆれ統一（必要なら増やしてOK）
-  if (/冷蔵|冷ぞう|れいぞう/i.test(c)) return "冷蔵庫";
-  if (/冷凍|冷とう|れいとう/i.test(c)) return "冷凍庫";
-  if (/常温|室温/i.test(c)) return "常温";
-  if (/日用|生活|消耗|衛生|紙/i.test(c)) return "日用品";
-  if (/飲料|ドリンク|水|お茶|茶|コーヒー/i.test(c)) return "飲料";
-  if (/調味|調料|しょうゆ|醤油|みそ|味噌|塩|砂糖|酢|だし/i.test(c)) return "調味料";
+      function guessCategoryFromText(name, note){
+        const t = (String(name||"") + " " + String(note||"")).toLowerCase();
 
-  return c; // それ以外はそのまま
-}
+        if (/(牛乳|ヨーグルト|チーズ|卵|たまご|納豆|豆腐|ハム|ベーコン|ソーセージ|生クリーム|バター|キムチ)/i.test(t)) return "冷蔵庫";
+        if (/(冷凍|アイス|うどん|唐揚げ|からあげ|餃子|ぎょうざ|チャーハン|フライドポテト)/i.test(t)) return "冷凍庫";
+        if (/(水|お茶|茶|コーヒー|紅茶|ジュース|炭酸|コーラ|スポーツドリンク|牛乳)/i.test(t)) return "飲料";
+        if (/(トイレット|ティッシュ|キッチン|洗剤|柔軟剤|漂白剤|ゴミ袋|ラップ|アルミホイル|歯磨き|シャンプー|ボディソープ)/i.test(t)) return "日用品";
+        if (/(しょうゆ|醤油|みそ|味噌|塩|砂糖|酢|だし|めんつゆ|ケチャップ|マヨ|ソース|ドレッシング)/i.test(t)) return "調味料";
+        if (/(米|パスタ|うどん(?!.*冷凍)|そうめん|小麦粉|パン粉|缶詰|レトルト)/i.test(t)) return "常温";
 
-function guessCategoryFromText(name, note){
-  const t = (String(name||"") + " " + String(note||"")).toLowerCase();
+        return "その他";
+      }
 
-  // 冷蔵っぽい
-  if (/(牛乳|ヨーグルト|チーズ|卵|たまご|納豆|豆腐|ハム|ベーコン|ソーセージ|生クリーム|バター|キムチ)/i.test(t)) return "冷蔵庫";
-
-  // 冷凍っぽい
-  if (/(冷凍|アイス|うどん|唐揚げ|からあげ|餃子|ぎょうざ|チャーハン|フライドポテト)/i.test(t)) return "冷凍庫";
-
-  // 飲料
-  if (/(水|お茶|茶|コーヒー|紅茶|ジュース|炭酸|コーラ|スポーツドリンク|牛乳)/i.test(t)) return "飲料";
-
-  // 日用品
-  if (/(トイレット|ティッシュ|キッチン|洗剤|柔軟剤|漂白剤|ゴミ袋|ラップ|アルミホイル|歯磨き|シャンプー|ボディソープ)/i.test(t)) return "日用品";
-
-  // 調味料
-  if (/(しょうゆ|醤油|みそ|味噌|塩|砂糖|酢|だし|めんつゆ|ケチャップ|マヨ|ソース|ドレッシング)/i.test(t)) return "調味料";
-
-  // 常温（主食系）
-  if (/(米|パスタ|うどん(?!.*冷凍)|そうめん|小麦粉|パン粉|缶詰|レトルト)/i.test(t)) return "常温";
-
-  return "その他";
-}
-
-function autoFillCategoryIfEmpty(){
-  // カテゴリが未入力なら推測で入れる
-  if (!f.category.value.trim()){
-    const guessed = guessCategoryFromText(f.name.value, f.note.value);
-    f.category.value = guessed;
-  }else{
-    // 入ってるなら表記ゆれだけ整える
-    f.category.value = normalizeCategory(f.category.value);
-  }
-}
+      function autoFillCategoryIfEmpty(){
+        if (!f.category.value.trim()){
+          const guessed = guessCategoryFromText(f.name.value, f.note.value);
+          f.category.value = guessed;
+        }else{
+          f.category.value = normalizeCategory(f.category.value);
+        }
+      }
 
       // ===== Product Dictionary (products.json + local override) =====
-const PRODUCTS_URL = "./products.json";
-const LS_PRODUCTS_LOCAL = "inventory_products_local_v1";
+      const PRODUCTS_URL = "./products.json";
+      const LS_PRODUCTS_LOCAL = "inventory_products_local_v1";
 
-let productsBase = {};   // GitHubの products.json
-let productsLocal = {};  // この端末で自動で育つ辞書
+      let productsBase = {};   // GitHubの products.json
+      let productsLocal = {};  // この端末で自動で育つ辞書
 
-async function loadProductsBase(){
-  try{
-    const res = await fetch(PRODUCTS_URL, { cache: "no-store" });
-    if(!res.ok) throw new Error("products.json fetch failed");
-    productsBase = await res.json();
-  }catch(e){
-    productsBase = {};
-  }
-}
+      async function loadProductsBase(){
+        try{
+          const res = await fetch(PRODUCTS_URL, { cache: "no-store" });
+          if(!res.ok) throw new Error("products.json fetch failed");
+          productsBase = await res.json();
+        }catch(e){
+          productsBase = {};
+        }
+      }
 
-function loadProductsLocal(){
-  try{ productsLocal = JSON.parse(localStorage.getItem(LS_PRODUCTS_LOCAL) || "{}"); }
-  catch{ productsLocal = {}; }
-}
+      function loadProductsLocal(){
+        try{ productsLocal = JSON.parse(localStorage.getItem(LS_PRODUCTS_LOCAL) || "{}"); }
+        catch{ productsLocal = {}; }
+      }
 
-function saveProductsLocal(){
-  localStorage.setItem(LS_PRODUCTS_LOCAL, JSON.stringify(productsLocal));
-}
+      function saveProductsLocal(){
+        localStorage.setItem(LS_PRODUCTS_LOCAL, JSON.stringify(productsLocal));
+      }
 
-function lookupProduct(jan){
-  const key = String(jan || "").trim();
-  if(!key) return null;
-  // 端末辞書を優先（後から自分で上書きできる）
-  return productsLocal[key] || productsBase[key] || null;
-}
+      function lookupProduct(jan){
+        const key = String(jan || "").trim();
+        if(!key) return null;
+        return productsLocal[key] || productsBase[key] || null;
+      }
 
-function applyProductToForm(jan){
-  const p = lookupProduct(jan);
-  if(!p) return false;
+      function applyProductToForm(jan){
+        const p = lookupProduct(jan);
+        if(!p) return false;
 
-  // すでに入力済みなら上書きしない（事故防止）
-  if(p.name && !f.name.value) f.name.value = p.name;
-  if(p.category && !f.category.value) f.category.value = p.category;
-  if(p.unit && !f.unit.value) f.unit.value = p.unit;
-  if(p.note && !f.note.value) f.note.value = p.note;
+        if(p.name && !f.name.value) f.name.value = p.name;
+        if(p.category && !f.category.value) f.category.value = p.category;
+        if(p.unit && !f.unit.value) f.unit.value = p.unit;
+        if(p.note && !f.note.value) f.note.value = p.note;
 
-  return true;
-}
-      
-// ===== Barcode Scan (Overlay camera) =====
-const btnScan = el("btnScan");
-if (btnScan) {
-  btnScan.addEventListener("click", async () => {
-    // BarcodeDetector が無い端末(iOS Safariなど)は非対応
-    if (!("BarcodeDetector" in window)) {
-      alert("この端末/ブラウザはバーコードスキャン非対応です（AndroidのChrome推奨）");
-      return;
-    }
+        return true;
+      }
 
-    // overlay作成
-    const overlay = document.createElement("div");
-    overlay.style.cssText = `
-      position:fixed; inset:0; z-index:99999;
-      background:rgba(0,0,0,.72);
-      display:flex; align-items:center; justify-content:center;
-      padding:14px;
-    `;
-    overlay.innerHTML = `
-      <div style="
-        width:min(520px,100%);
-        background:rgba(18,22,34,.96);
-        border:1px solid rgba(255,255,255,.12);
-        border-radius:18px;
-        overflow:hidden;
-      ">
-        <div style="padding:12px; display:flex; justify-content:space-between; align-items:center;">
-          <div style="font-weight:900;">バーコードを映してください</div>
-          <button id="scanClose" class="btn small secondary" type="button">閉じる</button>
-        </div>
-        <div style="padding:12px;">
-          <video id="scanVideo" style="width:100%; border-radius:14px; background:#000;" playsinline></video>
-          <div style="margin-top:8px; color:#9aa4b2; font-size:12px;">
-            ※ピントが合う距離で、バーコード全体が入るように
-          </div>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(overlay);
-
-    const closeBtn = overlay.querySelector("#scanClose");
-    const video = overlay.querySelector("#scanVideo");
-
-    let stream;
-    let timer;
-
-    const cleanup = () => {
-      if (timer) clearInterval(timer);
-      if (stream) stream.getTracks().forEach(t => t.stop());
-      overlay.remove();
-    };
-
-    closeBtn.addEventListener("click", cleanup);
-
-    try {
-      // カメラ起動（背面）
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment" }
-      });
-
-      video.srcObject = stream;
-      video.muted = true;
-      video.autoplay = true;
-      video.playsInline = true;
-      await video.play();
-
-      const detector = new BarcodeDetector({
-        formats: ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]
-      });
-
-      timer = setInterval(async () => {
-        try {
-          const codes = await detector.detect(video);
-          if (codes && codes.length) {
-            f.barcode.value = codes[0].rawValue;
-            applyProductToForm(f.barcode.value); 
-            autoFillCategoryIfEmpty();
-            cleanup();
-            try { navigator.vibrate?.(30); } catch {}
+      // ===== Barcode Scan (Overlay camera) =====
+      const btnScan = el("btnScan");
+      if (btnScan) {
+        btnScan.addEventListener("click", async () => {
+          if (!("BarcodeDetector" in window)) {
+            alert("この端末/ブラウザはバーコードスキャン非対応です（AndroidのChrome推奨）");
+            return;
           }
-        } catch {}
-      }, 250);
 
-    } catch (e) {
-      cleanup();
-      alert("カメラ起動に失敗しました。権限を許可しているか確認してください。");
-    }
-  });
-}
-      
+          const overlay = document.createElement("div");
+          overlay.style.cssText = `
+            position:fixed; inset:0; z-index:99999;
+            background:rgba(0,0,0,.72);
+            display:flex; align-items:center; justify-content:center;
+            padding:14px;
+          `;
+          overlay.innerHTML = `
+            <div style="
+              width:min(520px,100%);
+              background:rgba(18,22,34,.96);
+              border:1px solid rgba(255,255,255,.12);
+              border-radius:18px;
+              overflow:hidden;
+            ">
+              <div style="padding:12px; display:flex; justify-content:space-between; align-items:center;">
+                <div style="font-weight:900;">バーコードを映してください</div>
+                <button id="scanClose" class="btn small secondary" type="button">閉じる</button>
+              </div>
+              <div style="padding:12px;">
+                <video id="scanVideo" style="width:100%; border-radius:14px; background:#000;" playsinline></video>
+                <div style="margin-top:8px; color:#9aa4b2; font-size:12px;">
+                  ※ピントが合う距離で、バーコード全体が入るように
+                </div>
+              </div>
+            </div>
+          `;
+          document.body.appendChild(overlay);
+
+          const closeBtn = overlay.querySelector("#scanClose");
+          const video = overlay.querySelector("#scanVideo");
+
+          let stream;
+          let timer;
+
+          const cleanup = () => {
+            if (timer) clearInterval(timer);
+            if (stream) stream.getTracks().forEach(t => t.stop());
+            overlay.remove();
+          };
+
+          closeBtn.addEventListener("click", cleanup);
+
+          try {
+            stream = await navigator.mediaDevices.getUserMedia({
+              video: { facingMode: "environment" }
+            });
+
+            video.srcObject = stream;
+            video.muted = true;
+            video.autoplay = true;
+            video.playsInline = true;
+            await video.play();
+
+            const detector = new BarcodeDetector({
+              formats: ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]
+            });
+
+            timer = setInterval(async () => {
+              try {
+                const codes = await detector.detect(video);
+                if (codes && codes.length) {
+                  f.barcode.value = codes[0].rawValue;
+
+                  // 辞書反映 → カテゴリ推測
+                  applyProductToForm(f.barcode.value);
+                  autoFillCategoryIfEmpty();
+
+                  cleanup();
+                  try { navigator.vibrate?.(30); } catch {}
+                }
+              } catch {}
+            }, 250);
+
+          } catch (e) {
+            cleanup();
+            alert("カメラ起動に失敗しました。権限を許可しているか確認してください。");
+          }
+        });
+      }
+
       function load(){
         try{ items = JSON.parse(localStorage.getItem(LS_ITEMS) || "[]"); }catch{ items = []; }
         try{ buy = JSON.parse(localStorage.getItem(LS_BUY) || "[]"); }catch{ buy = []; }
-        loadProductsLocal();        // ← 追加
-  // products.json は非同期なので後で読み込む
+        loadProductsLocal();
         normalize();
         syncAutoBuy();
       }
+
       function save(){
         localStorage.setItem(LS_ITEMS, JSON.stringify(items));
         localStorage.setItem(LS_BUY, JSON.stringify(buy));
       }
+
       function normalize(){
         items = (items || []).map(it => ({
           id: it.id || uid(),
           name: (it.name ?? "").toString(),
           category: (it.category ?? "").toString(),
-          barcode: (it.barcode ?? "").toString(),
+          barcode: (it.barcode ?? "").toString(),   // ★追加：バーコードを永続化
           unit: (it.unit ?? "").toString(),
           expiry: (it.expiry ?? "").toString(),
           qty: Number.isFinite(+it.qty) ? +it.qty : 0,
@@ -1048,6 +1000,7 @@ if (btnScan) {
           note: (it.note ?? "").toString(),
           updatedAt: Number.isFinite(+it.updatedAt) ? +it.updatedAt : Date.now(),
         }));
+
         buy = (buy || []).map(b => ({
           id: b.id || uid(),
           type: (b.type === "manual") ? "manual" : "auto",
@@ -1072,10 +1025,8 @@ if (btnScan) {
         return du !== null && du <= 7;
       }
 
-      // ---- Auto buy sync (core)
       function syncAutoBuy(){
         const existing = new Map(buy.filter(b=>b.type==="auto").map(b => [b.itemId, b]));
-        // remove auto for deleted items
         buy = buy.filter(b => b.type==="manual" || items.some(it => it.id === b.itemId));
 
         for(const it of items){
@@ -1126,6 +1077,7 @@ if (btnScan) {
         const unit = it.unit ? it.unit : "";
         const meta = [
           it.category ? `カテゴリ：${escapeHtml(it.category)}` : null,
+          it.barcode ? `JAN：${escapeHtml(it.barcode)}` : null,  // ★任意表示（見たくなければ消してOK）
           it.note ? `メモ：${escapeHtml(it.note)}` : null,
         ].filter(Boolean).map(s=>`<span class="tag">${s}</span>`).join("");
 
@@ -1133,9 +1085,9 @@ if (btnScan) {
           <div class="item" data-itemid="${escapeHtml(it.id)}">
             <div>
               <div class="nameRow">
-  <span class="catIcon" title="${escapeHtml(it.category||"")}">${escapeHtml(catEmoji(it.category))}</span>
-  <div class="name">${escapeHtml(it.name)}</div>
-</div>
+                <span class="catIcon" title="${escapeHtml(it.category||"")}">${escapeHtml(catEmoji(it.category))}</span>
+                <div class="name">${escapeHtml(it.name)}</div>
+              </div>
               <div class="meta">
                 ${itemBadges(it)}
                 ${meta}
@@ -1179,7 +1131,6 @@ if (btnScan) {
         `;
       }
 
-      // Shopping list card with "apply bought qty"
       function buyCard(b){
         const isAuto = b.type === "auto";
         const it = isAuto ? items.find(x => x.id === b.itemId) : null;
@@ -1242,7 +1193,7 @@ if (btnScan) {
       function renderNotice(){
         const unboughtAuto = buy.filter(b => b.type==="auto" && !b.done).length;
         const dismissedAt = parseInt(localStorage.getItem(LS_NOTICE_DISMISS) || "0", 10) || 0;
-        const recentlyDismissed = (Date.now() - dismissedAt) < (6 * 60 * 60 * 1000); // 6時間は出さない
+        const recentlyDismissed = (Date.now() - dismissedAt) < (6 * 60 * 60 * 1000);
 
         noticeCount.textContent = String(unboughtAuto);
         if(unboughtAuto > 0 && !recentlyDismissed){
@@ -1262,19 +1213,17 @@ if (btnScan) {
       function render(){
         rebuildCategoryOptions();
 
-        // KPIs
         kpiTotal.textContent = String(items.length);
         kpiNeedBuy.textContent = String(items.filter(needBuy).length);
         kpiExpire.textContent = String(items.filter(isExpireSoon).length);
 
-        // Filter + search
         const q = (qEl.value||"").trim().toLowerCase();
         const cat = filterCategoryEl.value;
         const mode = filterModeEl.value;
 
         const filtered = items
           .filter(it => {
-            const hitQ = !q || (it.name + " " + it.category + " " + it.note).toLowerCase().includes(q);
+            const hitQ = !q || (it.name + " " + it.category + " " + it.note + " " + (it.barcode||"")).toLowerCase().includes(q);
             const hitC = !cat || (it.category||"") === cat;
             const hitM =
               mode === "all" ? true :
@@ -1302,7 +1251,6 @@ if (btnScan) {
           ? sortedBuy.map(buyRow).join("")
           : `<div style="padding:14px; color:var(--muted);">買い物リストは空です。</div>`;
 
-        // Shopping list view lists (自動を上に)
         const pmBase = [...sortedBuy].sort((a,b)=>{
           const ta = (a.type==="auto") ? 0 : 1;
           const tb = (b.type==="auto") ? 0 : 1;
@@ -1330,6 +1278,7 @@ if (btnScan) {
         f.id.value = "";
         f.name.value = "";
         f.category.value = "";
+        f.barcode.value = "";   // ★追加：クリア時にバーコードも消す
         f.unit.value = "";
         f.expiry.value = "";
         f.qty.value = 0;
@@ -1344,6 +1293,7 @@ if (btnScan) {
           id: data.id || uid(),
           name: (data.name||"").trim(),
           category: (data.category||"").trim(),
+          barcode: (data.barcode||"").trim(),   // ★追加：保存対象
           unit: (data.unit||"").trim(),
           expiry: (data.expiry||"").trim(),
           qty: Math.max(0, parseInt(data.qty,10) || 0),
@@ -1351,7 +1301,6 @@ if (btnScan) {
           buyQty: Math.max(1, parseInt(data.buyQty,10) || 1),
           note: (data.note||"").trim(),
           updatedAt: now,
-          barcode: (data.barcode||"").trim(),
         };
         const idx = items.findIndex(x => x.id === it.id);
         if(idx >= 0) items[idx] = it;
@@ -1512,11 +1461,16 @@ if (btnScan) {
 
       form.addEventListener("submit", (e) => {
         e.preventDefault();
+
+        // ★保存前にカテゴリ自動補完＆表記ゆれ統一
+        autoFillCategoryIfEmpty();
         f.category.value = normalizeCategory(f.category.value);
+
         upsertItem({
           id: f.id.value,
           name: f.name.value,
           category: f.category.value,
+          barcode: f.barcode.value,   // ★追加：保存
           unit: f.unit.value,
           expiry: f.expiry.value,
           qty: f.qty.value,
@@ -1524,24 +1478,32 @@ if (btnScan) {
           buyQty: f.buyQty.value,
           note: f.note.value,
         });
+
         // 保存時：バーコードがあればこの端末辞書に登録（自動で育つ）
-const jan = (f.barcode?.value || "").trim();
-if (jan && f.name.value.trim()) {
-  productsLocal[jan] = {
-    name: f.name.value.trim(),
-    category: f.category.value.trim(),
-    unit: f.unit.value.trim(),
-    note: f.note.value.trim()
-  };
-  saveProductsLocal();
-}
+        const jan = (f.barcode?.value || "").trim();
+        if (jan && f.name.value.trim()) {
+          productsLocal[jan] = {
+            name: f.name.value.trim(),
+            category: f.category.value.trim(),
+            unit: f.unit.value.trim(),
+            note: f.note.value.trim()
+          };
+          saveProductsLocal();
+        }
+
         clearForm();
       });
 
+      // ★バーコード手入力/貼り付け時にも反映
       f.barcode?.addEventListener("change", () => {
-  applyProductToForm(f.barcode.value);
-});
-      autoFillCategoryIfEmpty();
+        applyProductToForm(f.barcode.value);
+        autoFillCategoryIfEmpty();
+      });
+
+      // ★品名/メモを入れたらカテゴリ推測（未入力時のみ）
+      f.name?.addEventListener("input", () => autoFillCategoryIfEmpty());
+      f.note?.addEventListener("input", () => autoFillCategoryIfEmpty());
+
       el("btnClear").addEventListener("click", clearForm);
 
       listEl.addEventListener("click", (e) => {
@@ -1563,6 +1525,7 @@ if (jan && f.name.value.trim()) {
           f.id.value = it.id;
           f.name.value = it.name;
           f.category.value = it.category;
+          f.barcode.value = it.barcode || ""; // ★追加：編集で復元
           f.unit.value = it.unit;
           f.expiry.value = it.expiry;
           f.qty.value = it.qty;
@@ -1647,13 +1610,13 @@ if (jan && f.name.value.trim()) {
       el("btnDemo").addEventListener("click", () => {
         if(items.length > 0 && !confirm("既存データがあるけどサンプルを追加しますか？")) return;
         const demo = [
-          {name:"牛乳", category:"冷蔵庫", unit:"本", qty:1, reorder:0, buyQty:2, expiry: nextDate(3), note:"1L"},
-          {name:"卵", category:"冷蔵庫", unit:"パック", qty:0, reorder:1, buyQty:1, expiry: nextDate(10), note:"10個"},
-          {name:"冷凍唐揚げ", category:"冷凍庫", unit:"袋", qty:2, reorder:2, buyQty:2, expiry:"", note:"よく食べる"},
-          {name:"冷凍うどん", category:"冷凍庫", unit:"袋", qty:1, reorder:2, buyQty:3, expiry:"", note:""},
-          {name:"ティッシュ", category:"日用品", unit:"箱", qty:2, reorder:2, buyQty:5, expiry:"", note:""},
-          {name:"トイレットペーパー", category:"日用品", unit:"ロール", qty:4, reorder:6, buyQty:12, expiry:"", note:"ダブル"},
-          {name:"米", category:"常温", unit:"kg", qty:2, reorder:3, buyQty:5, expiry:"", note:""},
+          {name:"牛乳", category:"冷蔵庫", unit:"本", qty:1, reorder:0, buyQty:2, expiry: nextDate(3), note:"1L", barcode:""},
+          {name:"卵", category:"冷蔵庫", unit:"パック", qty:0, reorder:1, buyQty:1, expiry: nextDate(10), note:"10個", barcode:""},
+          {name:"冷凍唐揚げ", category:"冷凍庫", unit:"袋", qty:2, reorder:2, buyQty:2, expiry:"", note:"よく食べる", barcode:""},
+          {name:"冷凍うどん", category:"冷凍庫", unit:"袋", qty:1, reorder:2, buyQty:3, expiry:"", note:"", barcode:""},
+          {name:"ティッシュ", category:"日用品", unit:"箱", qty:2, reorder:2, buyQty:5, expiry:"", note:"", barcode:""},
+          {name:"トイレットペーパー", category:"日用品", unit:"ロール", qty:4, reorder:6, buyQty:12, expiry:"", note:"ダブル", barcode:""},
+          {name:"米", category:"常温", unit:"kg", qty:2, reorder:3, buyQty:5, expiry:"", note:"", barcode:""},
         ];
         for(const d of demo) upsertItem(d);
       });
@@ -1713,14 +1676,15 @@ if (jan && f.name.value.trim()) {
       });
 
       // Initial
-load();
-loadProductsBase().then(() => {
-  // products.json 読めたあとに、バーコード入力があれば反映できる
-  if (f.barcode?.value) applyProductToForm(f.barcode.value);
-});
-      autoFillCategoryIfEmpty();
-render();
-      })();
+      load();
+      loadProductsBase().then(() => {
+        if (f.barcode?.value) {
+          applyProductToForm(f.barcode.value);
+          autoFillCategoryIfEmpty();
+        }
+      });
+      render();
+    })();
   </script>
 </body>
-</html>
+        </html>
