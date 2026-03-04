@@ -825,7 +825,6 @@
   if(c.includes("調味") || c.includes("調料")) return "🧂";
   return "📦";
       }
-el("btnScan").addEventListener("click", async () => {
 
 // ===== Barcode Scan (Overlay camera) =====
 const btnScan = el("btnScan");
@@ -887,20 +886,16 @@ if (btnScan) {
         video: { facingMode: "environment" }
       });
 
-      // video設定（自動再生制限対策）
       video.srcObject = stream;
-      video.muted = true;       // 重要：自動再生対策
+      video.muted = true;
       video.autoplay = true;
       video.playsInline = true;
-
-      // 再生開始待ち
       await video.play();
 
       const detector = new BarcodeDetector({
         formats: ["ean_13","ean_8","upc_a","upc_e","code_128","code_39","qr_code"]
       });
 
-      // 検出ループ（250msごと）
       timer = setInterval(async () => {
         try {
           const codes = await detector.detect(video);
@@ -914,10 +909,11 @@ if (btnScan) {
 
     } catch (e) {
       cleanup();
-      alert("カメラ起動に失敗しました。ブラウザがChromeか、権限が許可されているか確認してください。");
+      alert("カメラ起動に失敗しました。権限を許可しているか確認してください。");
     }
   });
-  }
+}
+      
       function load(){
         try{ items = JSON.parse(localStorage.getItem(LS_ITEMS) || "[]"); }catch{ items = []; }
         try{ buy = JSON.parse(localStorage.getItem(LS_BUY) || "[]"); }catch{ buy = []; }
