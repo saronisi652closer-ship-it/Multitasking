@@ -826,6 +826,52 @@
   return "📦";
       }
 
+      // ===== Product Dictionary (products.json + local override) =====
+const PRODUCTS_URL = "./products.json";
+const LS_PRODUCTS_LOCAL = "inventory_products_local_v1";
+
+let productsBase = {};   // GitHubの products.json
+let productsLocal = {};  // この端末で自動で育つ辞書
+
+async function loadProductsBase(){
+  try{
+    const res = await fetch(PRODUCTS_URL, { cache: "no-store" });
+    if(!res.ok) throw new Error("products.json fetch failed");
+    productsBase = await res.json();
+  }catch(e){
+    productsBase = {};
+  }
+}
+
+function loadProductsLocal(){
+  try{ productsLocal = JSON.parse(localStorage.getItem(LS_PRODUCTS_LOCAL) || "{}"); }
+  catch{ productsLocal = {}; }
+}
+
+function saveProductsLocal(){
+  localStorage.setItem(LS_PRODUCTS_LOCAL, JSON.stringify(productsLocal));
+}
+
+function lookupProduct(jan){
+  const key = String(jan || "").trim();
+  if(!key) return null;
+  // 端末辞書を優先（後から自分で上書きできる）
+  return productsLocal[key] || productsBase[key] || null;
+}
+
+function applyProductToForm(jan){
+  const p = lookupProduct(jan);
+  if(!p) return false;
+
+  // すでに入力済みなら上書きしない（事故防止）
+  if(p.name && !f.name.value) f.name.value = p.name;
+  if(p.category && !f.category.value) f.category.value = p.category;
+  if(p.unit && !f.unit.value) f.unit.value = p.unit;
+  if(p.note && !f.note.value) f.note.value = p.note;
+
+  return true;
+}
+      
 // ===== Barcode Scan (Overlay camera) =====
 const btnScan = el("btnScan");
 if (btnScan) {
