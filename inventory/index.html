@@ -989,18 +989,18 @@
 
       function normalize(){
         items = (items || []).map(it => ({
-          id: it.id || uid(),
-          name: (it.name ?? "").toString(),
-          category: (it.category ?? "").toString(),
-          barcode: (it.barcode ?? "").toString(),   // ★追加：バーコードを永続化
-          unit: (it.unit ?? "").toString(),
-          expiry: (it.expiry ?? "").toString(),
-          qty: Number.isFinite(+it.qty) ? +it.qty : 0,
-          reorder: Number.isFinite(+it.reorder) ? +it.reorder : 0,
-          buyQty: Number.isFinite(+it.buyQty) ? +it.buyQty : 1,
-          note: (it.note ?? "").toString(),
-          updatedAt: Number.isFinite(+it.updatedAt) ? +it.updatedAt : Date.now(),
-        }));
+  id: it.id || uid(),
+  name: (it.name ?? "").toString(),
+  category: (it.category ?? "").toString(),
+  barcode: (it.barcode ?? "").toString(),   // ← 追加
+  unit: (it.unit ?? "").toString(),
+  expiry: (it.expiry ?? "").toString(),
+  qty: Number.isFinite(+it.qty) ? +it.qty : 0,
+  reorder: Number.isFinite(+it.reorder) ? +it.reorder : 0,
+  buyQty: Number.isFinite(+it.buyQty) ? +it.buyQty : 1,
+  note: (it.note ?? "").toString(),
+  updatedAt: Number.isFinite(+it.updatedAt) ? +it.updatedAt : Date.now(),
+}));
 
         buy = (buy || []).map(b => ({
           id: b.id || uid(),
