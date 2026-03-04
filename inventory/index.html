@@ -1494,11 +1494,15 @@
         clearForm();
       });
 
-      // ★バーコード手入力/貼り付け時にも反映
-      f.barcode?.addEventListener("change", () => {
-        applyProductToForm(f.barcode.value);
-        autoFillCategoryIfEmpty();
-      });
+      // ★バーコード手入力/貼り付け時にも反映（input/change/blur）
+const onBarcode = () => {
+  applyProductToForm(f.barcode.value);
+  autoFillCategoryIfEmpty();
+};
+
+f.barcode?.addEventListener("input", onBarcode);  // 入力中に反映
+f.barcode?.addEventListener("change", onBarcode); // 確定時に反映
+f.barcode?.addEventListener("blur", onBarcode);   // フォーカス外れで反映
 
       // ★品名/メモを入れたらカテゴリ推測（未入力時のみ）
       f.name?.addEventListener("input", () => autoFillCategoryIfEmpty());
