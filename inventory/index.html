@@ -1460,6 +1460,17 @@ if (btnScan) {
           buyQty: f.buyQty.value,
           note: f.note.value,
         });
+        // 保存時：バーコードがあればこの端末辞書に登録（自動で育つ）
+const jan = (f.barcode?.value || "").trim();
+if (jan && f.name.value.trim()) {
+  productsLocal[jan] = {
+    name: f.name.value.trim(),
+    category: f.category.value.trim(),
+    unit: f.unit.value.trim(),
+    note: f.note.value.trim()
+  };
+  saveProductsLocal();
+}
         clearForm();
       });
 
