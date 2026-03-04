@@ -1633,9 +1633,12 @@ if (btnScan) {
       });
 
       // Initial
-      load();
-      render();
-    })();
+load();
+loadProductsBase().then(() => {
+  // products.json 読めたあとに、バーコード入力があれば反映できる
+  if (f.barcode?.value) applyProductToForm(f.barcode.value);
+});
+render();
   </script>
 </body>
 </html>
