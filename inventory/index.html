@@ -1007,7 +1007,8 @@ if (btnScan) {
           const codes = await detector.detect(video);
           if (codes && codes.length) {
             f.barcode.value = codes[0].rawValue;
-            applyProductToForm(f.barcode.value);   // ← 追加
+            applyProductToForm(f.barcode.value); 
+            autoFillCategoryIfEmpty();
             cleanup();
             try { navigator.vibrate?.(30); } catch {}
           }
@@ -1537,7 +1538,7 @@ if (jan && f.name.value.trim()) {
       f.barcode?.addEventListener("change", () => {
   applyProductToForm(f.barcode.value);
 });
-      
+      autoFillCategoryIfEmpty();
       el("btnClear").addEventListener("click", clearForm);
 
       listEl.addEventListener("click", (e) => {
@@ -1714,6 +1715,7 @@ loadProductsBase().then(() => {
   // products.json 読めたあとに、バーコード入力があれば反映できる
   if (f.barcode?.value) applyProductToForm(f.barcode.value);
 });
+      autoFillCategoryIfEmpty();
 render();
       })();
   </script>
