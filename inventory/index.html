@@ -1463,6 +1463,10 @@ if (btnScan) {
         clearForm();
       });
 
+      f.barcode?.addEventListener("change", () => {
+  applyProductToForm(f.barcode.value);
+});
+      
       el("btnClear").addEventListener("click", clearForm);
 
       listEl.addEventListener("click", (e) => {
