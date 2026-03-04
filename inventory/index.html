@@ -825,6 +825,66 @@
   if(c.includes("調味") || c.includes("調料")) return "🧂";
   return "📦";
       }
+      // ===== Auto Category (④) =====
+const CATEGORY_CANON = [
+  "冷蔵庫",
+  "冷凍庫",
+  "常温",
+  "日用品",
+  "飲料",
+  "調味料",
+  "その他"
+];
+
+function normalizeCategory(cat){
+  const c = String(cat||"").trim();
+  if(!c) return "";
+
+  // 表記ゆれ統一（必要なら増やしてOK）
+  if (/冷蔵|冷ぞう|れいぞう/i.test(c)) return "冷蔵庫";
+  if (/冷凍|冷とう|れいとう/i.test(c)) return "冷凍庫";
+  if (/常温|室温/i.test(c)) return "常温";
+  if (/日用|生活|消耗|衛生|紙/i.test(c)) return "日用品";
+  if (/飲料|ドリンク|水|お茶|茶|コーヒー/i.test(c)) return "飲料";
+  if (/調味|調料|しょうゆ|醤油|みそ|味噌|塩|砂糖|酢|だし/i.test(c)) return "調味料";
+
+  return c; // それ以外はそのまま
+}
+
+function guessCategoryFromText(name, note){
+  const t = (String(name||"") + " " + String(note||"")).toLowerCase();
+
+  // 冷蔵っぽい
+  if (/(牛乳|ヨーグルト|チーズ|卵|たまご|納豆|豆腐|ハム|ベーコン|ソーセージ|生クリーム|バター|キムチ)/i.test(t)) return "冷蔵庫";
+
+  // 冷凍っぽい
+  if (/(冷凍|アイス|うどん|唐揚げ|からあげ|餃子|ぎょうざ|チャーハン|フライドポテト)/i.test(t)) return "冷凍庫";
+
+  // 飲料
+  if (/(水|お茶|茶|コーヒー|紅茶|ジュース|炭酸|コーラ|スポーツドリンク|牛乳)/i.test(t)) return "飲料";
+
+  // 日用品
+  if (/(トイレット|ティッシュ|キッチン|洗剤|柔軟剤|漂白剤|ゴミ袋|ラップ|アルミホイル|歯磨き|シャンプー|ボディソープ)/i.test(t)) return "日用品";
+
+  // 調味料
+  if (/(しょうゆ|醤油|みそ|味噌|塩|砂糖|酢|だし|めんつゆ|ケチャップ|マヨ|ソース|ドレッシング)/i.test(t)) return "調味料";
+
+  // 常温（主食系）
+  if (/(米|パスタ|うどん(?!.*冷凍)|そうめん|小麦粉|パン粉|缶詰|レトルト)/i.test(t)) return "常温";
+
+  return "その他";
+}
+
+function autoFillCategoryIfEmpty(){
+  // カテゴリが未入力なら推測で入れる
+  if (!f.category.value.trim()){
+    const guessed = guessCategoryFromText(f.name.value, f.note.value);
+    f.category.value = guessed;
+  }else{
+    // 入ってるなら表記ゆれだけ整える
+    f.category.value = normalizeCategory(f.category.value);
+  }
+}
 
       // ===== Product Dictionary (products.json + local override) =====
 const PRODUCTS_URL = "./products.json";
