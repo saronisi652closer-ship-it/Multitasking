@@ -1351,6 +1351,7 @@ if (btnScan) {
           buyQty: Math.max(1, parseInt(data.buyQty,10) || 1),
           note: (data.note||"").trim(),
           updatedAt: now,
+          barcode: (data.barcode||"").trim(),
         };
         const idx = items.findIndex(x => x.id === it.id);
         if(idx >= 0) items[idx] = it;
