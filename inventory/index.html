@@ -1510,6 +1510,7 @@ if (btnScan) {
 
       form.addEventListener("submit", (e) => {
         e.preventDefault();
+        f.category.value = normalizeCategory(f.category.value);
         upsertItem({
           id: f.id.value,
           name: f.name.value,
